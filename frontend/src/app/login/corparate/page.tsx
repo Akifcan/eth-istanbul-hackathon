@@ -98,6 +98,7 @@ export default function CorporateLogin() {
 
                     // Update user store with seller information
                     setUser({
+                        id: sellerData.id,
                         address: formData.walletAddress || currentAddress, // Use wallet from form or current MetaMask address
                         profilePhoto: sellerData.photoUrl,
                         name: sellerData.name || sellerData.email.split('@')[0], // Use name from API or email prefix as fallback

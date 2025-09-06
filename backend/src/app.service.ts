@@ -23,16 +23,16 @@ export class AppService {
     private sellerRepository: Repository<Seller>,
     @InjectRepository(Offers)
     private offersRepository: Repository<Offers>,
-  ) {}
+  ) { }
 
   async createCampaign(createCampaignDto: CreateCampaignDto): Promise<Campaign> {
     const campaign = await this.campaignRepository.save(this.campaignRepository.create(createCampaignDto));
     await this.shippingRepository.save(this.shippingRepository.create({
-        name: createCampaignDto.name,
-        address: createCampaignDto.address,
-        phoneNumber: createCampaignDto.phoneNumber,
-        campaignTransactionId: campaign.transaction,
-        walletAddress: campaign.createdWallet
+      name: createCampaignDto.name,
+      address: createCampaignDto.address,
+      phoneNumber: createCampaignDto.phoneNumber,
+      campaignTransactionId: campaign.transaction,
+      walletAddress: campaign.createdWallet
     }))
     return campaign
   }
@@ -69,7 +69,7 @@ export class AppService {
 
   async loginSeller(loginSellerDto: LoginSellerDto): Promise<Seller> {
     const { email, password } = loginSellerDto;
-    
+
     // Find seller by email
     const seller = await this.sellerRepository.findOne({
       where: { email }
@@ -81,7 +81,7 @@ export class AppService {
 
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, seller.password);
-    
+
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid email or password');
     }
@@ -100,16 +100,17 @@ export class AppService {
       campaignTransactionId: purchaseDto.contractId,
       walletAddress: purchaseDto.walletAddress
     });
-    
+
     return await this.shippingRepository.save(shipping);
   }
 
   async createOffer(createOfferDto: CreateOfferDto): Promise<Offers> {
-    const offer = this.offersRepository.create({
+    const offer = this.offersRepository.create(this.offersRepository.create({
       contract: createOfferDto.transactionId,
-      wallet: createOfferDto.wallet
-    });
-    
+      wallet: createOfferDto.wallet,
+      seller: { id: createOfferDto.sellerId }
+    }));
+
     return await this.offersRepository.save(offer);
   }
 
@@ -124,16 +125,16 @@ export class AppService {
 
   async getSuggestedCampaign(): Promise<Campaign | null> {
     // Get random campaign using ORDER BY RANDOM()
-   const campaign = await this.campaignRepository
-  .createQueryBuilder("campaign")
-  .orderBy("RAND()")
-  .getOne();
-    
+    const campaign = await this.campaignRepository
+      .createQueryBuilder("campaign")
+      .orderBy("RAND()")
+      .getOne();
+
     // Return null if no campaigns
     if (!campaign) {
       return null;
     }
-    
+
     return campaign;
   }
 
@@ -141,11 +142,11 @@ export class AppService {
     const seller = await this.sellerRepository.findOne({
       where: { email }
     });
-    
+
     if (!seller) {
       return null;
     }
-    
+
     // Return seller without password
     const { password: _, ...sellerWithoutPassword } = seller;
     return sellerWithoutPassword as Seller;

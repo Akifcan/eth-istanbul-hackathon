@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Seller } from "./seller.entity";
 
 @Entity()
 export class Offers {
@@ -11,6 +12,10 @@ export class Offers {
 
     @Column()
     wallet: string
+
+    @ManyToOne(() => Seller, seller => seller.id, { onDelete: 'CASCADE', nullable: true })
+    @JoinColumn({ name: 'seller_id' })
+    seller?: Seller
 
     @CreateDateColumn()
     createdAt: Date

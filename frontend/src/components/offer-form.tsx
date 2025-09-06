@@ -4,6 +4,7 @@ import { ethers } from 'ethers';
 import contractArtifact from "@/contract/BuyItem/BuyItem.json";
 import { Tag, DollarSign, Package, ExternalLink } from 'lucide-react';
 import api from '../config/api';
+import useUserStore from '@/store/user';
 
 const { abi } = contractArtifact;
 
@@ -21,6 +22,7 @@ export default function OfferForm({ contractAddress, onOfferSuccess }: OfferForm
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const { user } = useUserStore()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Clear messages when user starts typing
@@ -91,6 +93,7 @@ export default function OfferForm({ contractAddress, onOfferSuccess }: OfferForm
         const walletAddress = await signer.getAddress();
         
         const offerResponse = await api.post('/offer', {
+          sellerId: user?.id,
           transactionId: contractAddress,
           wallet: walletAddress
         });

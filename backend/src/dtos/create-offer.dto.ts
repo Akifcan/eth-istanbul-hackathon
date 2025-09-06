@@ -8,4 +8,7 @@ export class CreateOfferDto {
   @IsNotEmpty()
   @IsString()
   wallet: string;
+
+  @IsNotEmpty()
+  sellerId: number
 }
