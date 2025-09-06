@@ -3,6 +3,7 @@ import { AppService } from './app.service';
 import { CreateCampaignDto } from './dtos/create-campaign.dto';
 import { RegisterSellerDto } from './dtos/register-seller.dto';
 import { LoginSellerDto } from './dtos/login-seller.dto';
+import { PurchaseDto } from './dtos/purchase.dto';
 import { Campaign } from './entities/campaign.entity';
 import { Seller } from './entities/seller.entity';
 
@@ -22,6 +23,11 @@ export class AppController {
   @Post('login')
   async login(@Body() loginSellerDto: LoginSellerDto): Promise<Seller> {
     return this.appService.loginSeller(loginSellerDto);
+  }
+
+  @Post('purchase')
+  async purchase(@Body() purchaseDto: PurchaseDto): Promise<any> {
+    return this.appService.createPurchase(purchaseDto);
   }
 
   @Get('campaigns')

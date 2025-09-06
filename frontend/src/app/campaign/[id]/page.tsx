@@ -8,6 +8,7 @@ import { ArrowLeft, Users, Clock, DollarSign, Package, CheckCircle, AlertCircle,
 import Link from 'next/link';
 import OfferForm from '../../../components/offer-form';
 import JoinCampaignSidebar from '@/components/join-campaign-sidebar';
+import OffersList from '../../../components/offers-list';
 
 declare global {
     interface Window {
@@ -43,6 +44,7 @@ export default function CampaignDetail() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const [offersRefreshTrigger, setOffersRefreshTrigger] = useState(0);
 
     const copyToClipboard = async (text: string) => {
         try {
@@ -256,6 +258,12 @@ export default function CampaignDetail() {
                                         )}
                                     </p>
                                 </div>
+
+                                            {/* Offers List */}
+                    <div className="mb-8" style={{gridColumn: '1/-1'}}>
+                        <OffersList contractAddress={campaignId} refreshTrigger={offersRefreshTrigger} />
+                    </div>
+
                             </div>
 
                             {/* Winner Info */}
@@ -301,12 +309,17 @@ export default function CampaignDetail() {
                                     onOfferSuccess={() => {
                                         setSuccessMessage('Offer submitted successfully!');
                                         getParticipantInfo(); // Refresh campaign info
+                                        setOffersRefreshTrigger(prev => prev + 1); // Refresh offers list
+                                        // Scroll to top
+                                        window.scrollTo({ top: 0, behavior: 'smooth' });
                                         setTimeout(() => setSuccessMessage(''), 3000);
                                     }}
                                 />
                             )}
                         </div>
                     )}
+
+                
                 </div>
             </div>
         </div>

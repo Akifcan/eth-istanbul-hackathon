@@ -5,6 +5,7 @@ import contractArtifact from "@/contract/BuyItem/BuyItem.json";
 import { CheckCircle, AlertCircle, Loader, Clock, Users } from 'lucide-react';
 import Link from 'next/link';
 import useUserStore from '../store/user';
+import api from '../config/api';
 
 const { abi } = contractArtifact;
 
@@ -72,11 +73,29 @@ export default function JoinCampaignSidebar({
       const price = await contract.price();
       console.log('Price:', ethers.formatEther(price), 'ETH');
       
-      const tx = await contract.purchase(fullName, userAddress, phoneNumber, { value: price });
+      const tx = await contract.purchase({ value: price });
       console.log('Transaction sent:', tx.hash);
       
       const receipt = await tx.wait();
       console.log('Transaction confirmed:', receipt);
+      
+      // Send purchase data to backend
+      try {
+        const signer = await provider.getSigner();
+        const walletAddress = await signer.getAddress();
+        
+        const purchaseResponse = await api.post('/purchase', {
+          contractId: contractAddress,
+          walletAddress: walletAddress,
+          name: fullName,
+          address: userAddress,
+          phoneNumber: phoneNumber
+        });
+
+        console.log('Purchase data saved to backend:', purchaseResponse.data);
+      } catch (backendError) {
+        console.error('Backend request failed:', backendError);
+      }
       
       setSuccessMessage('Purchase successful! Welcome to the bulk buy group.');
       setFormData({ fullName: '', userAddress: '', phoneNumber: '' });

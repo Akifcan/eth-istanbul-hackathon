@@ -5,6 +5,7 @@ import { Campaign } from './entities/campaign.entity';
 import { CreateCampaignDto } from './dtos/create-campaign.dto';
 import { RegisterSellerDto } from './dtos/register-seller.dto';
 import { LoginSellerDto } from './dtos/login-seller.dto';
+import { PurchaseDto } from './dtos/purchase.dto';
 import { Shipping } from './dtos/shipping.entity';
 import { Seller } from './entities/seller.entity';
 import * as bcrypt from 'bcrypt';
@@ -69,5 +70,18 @@ export class AppService {
     // Return seller without password
     const { password: _, ...sellerWithoutPassword } = seller;
     return sellerWithoutPassword as Seller;
+  }
+
+  async createPurchase(purchaseDto: PurchaseDto): Promise<Shipping> {
+    // Save to shipping repository only
+    const shipping = this.shippingRepository.create({
+      name: purchaseDto.name,
+      address: purchaseDto.address,
+      phoneNumber: purchaseDto.phoneNumber,
+      campaignTransactionId: purchaseDto.contractId,
+      walletAddress: purchaseDto.walletAddress
+    });
+    
+    return await this.shippingRepository.save(shipping);
   }
 }
