@@ -14,7 +14,7 @@ const { abi, bytecode } = contractArtifact;
 export default function Demo() {
     const [account, setAccount] = useState<string>('');
     const [isConnecting, setIsConnecting] = useState(false);
-    const [contractAddress, setContractAddress] = useState<string>('0x2D868Cc128fdA4EA9C33C7d0C5dE146528d38487');
+    const [contractAddress, setContractAddress] = useState<string>('0xA347024cE6f489273351E0fA65d4138FfaeCB39f');
     const [participantInfo, setParticipantInfo] = useState<any>(null);
     const [offers, setOffers] = useState<any[]>([]);
     const [purchases, setPurchases] = useState<any[]>([]);
@@ -117,7 +117,9 @@ export default function Demo() {
                 contractEndDate: result[2].toString(),
                 priceETH: result[3],
                 contractTitle: result[4],
-                contractDescription: result[5]
+                contractDescription: result[5],
+                senderCompany: result[6],
+                isFinalized: result[7]
             };
 
             console.log('Participant Info:', info);
@@ -215,15 +217,10 @@ export default function Demo() {
         }
     };
 
-    const submitOffer = async (contractAddr: string, price: string, productName: string, productLink: string) => {
+    const handleWithdraw = async (contractAddr: string) => {
         try {
             if (!window.ethereum) {
                 alert("MetaMask gerekli!");
-                return;
-            }
-
-            if (!price || !productName || !productLink) {
-                alert("Lütfen tüm teklif bilgilerini doldurun!");
                 return;
             }
 
@@ -231,23 +228,56 @@ export default function Demo() {
             const signer = await provider.getSigner();
             const contract = new ethers.Contract(contractAddr, abi, signer);
 
-            console.log('Submitting offer...');
+            console.log('Withdrawing from contract...');
             
-            const priceInWei = ethers.parseEther(price);
-            const tx = await contract.submitOffer(priceInWei, productName, productLink);
+            const tx = await contract.withdraw();
             
             console.log('Transaction sent:', tx.hash);
-            alert(`Offer submitted: ${tx.hash}`);
+            alert(`Withdraw transaction sent: ${tx.hash}`);
             
             const receipt = await tx.wait();
             console.log('Transaction confirmed:', receipt);
-            alert('Offer submitted successfully!');
+            alert('Withdraw successful! Your money has been returned.');
 
-            await getOffers(contractAddr);
+            // Refresh data after withdraw
+            await getParticipantInfo(contractAddr);
+            await getAllPurchases(contractAddr);
 
         } catch (error: any) {
-            console.error('Error submitting offer:', error);
-            alert(`Offer submission failed: ${error.message || error}`);
+            console.error('Error withdrawing:', error);
+            alert(`Withdraw failed: ${error.message || error}`);
+        }
+    };
+
+    const handleFinalize = async (contractAddr: string) => {
+        try {
+            if (!window.ethereum) {
+                alert("MetaMask gerekli!");
+                return;
+            }
+
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+            const contract = new ethers.Contract(contractAddr, abi, signer);
+
+            console.log('Finalizing contract...');
+            
+            const tx = await contract.finalize();
+            
+            console.log('Transaction sent:', tx.hash);
+            alert(`Finalize transaction sent: ${tx.hash}`);
+            
+            const receipt = await tx.wait();
+            console.log('Transaction confirmed:', receipt);
+            alert('Contract finalized successfully! Payments have been distributed.');
+
+            // Refresh data after finalize
+            await getParticipantInfo(contractAddr);
+            await getAllPurchases(contractAddr);
+
+        } catch (error: any) {
+            console.error('Error finalizing:', error);
+            alert(`Finalize failed: ${error.message || error}`);
         }
     };
 
@@ -426,10 +456,24 @@ export default function Demo() {
                                     </button>
                                     <button 
                                         onClick={() => getAllPurchases(contractAddress)}
-                                        className="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600"
+                                        className="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 mr-4"
                                     >
                                         Get All Purchases
                                     </button>
+                                    <button 
+                                        onClick={() => handleWithdraw(contractAddress)}
+                                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 mr-4"
+                                    >
+                                        Withdraw & Exit
+                                    </button>
+                                    {participantInfo && !participantInfo.isFinalized && (
+                                        <button 
+                                            onClick={() => handleFinalize(contractAddress)}
+                                            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                                        >
+                                            Finalize Contract (Owner Only)
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </>
@@ -444,6 +488,10 @@ export default function Demo() {
                             <p className="text-white">Max Participants: {participantInfo.maxParticipants}</p>
                             <p className="text-white">End Date: {new Date(parseInt(participantInfo.contractEndDate) * 1000).toLocaleString()}</p>
                             <p className="text-blue-400">Price: {participantInfo.priceETH}</p>
+                            <p className="text-white"><strong>Status:</strong> {participantInfo.isFinalized ? <span className="text-green-400">Finalized</span> : <span className="text-yellow-400">Active</span>}</p>
+                            {participantInfo.isFinalized && participantInfo.senderCompany !== '0x0000000000000000000000000000000000000000' && (
+                                <p className="text-white"><strong>Winner Company:</strong> <span className="text-green-400 font-mono text-sm">{participantInfo.senderCompany}</span></p>
+                            )}
                         </div>
                     )}
 

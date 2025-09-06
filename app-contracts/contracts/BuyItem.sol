@@ -18,7 +18,7 @@ contract BuyItem {
     }
 
     uint256 public endDate;
-    uint256 public participantCount;
+    // participantCount removed - will be calculated from participants.length
     uint256 public maxParticipantCount;
     uint256 public price;
     bool public isFinalized;
@@ -26,6 +26,7 @@ contract BuyItem {
     address public owner;
     string public title;
     string public description;
+    address public senderCompany;
 
     Offer[] public offers;
     address[] public participants;
@@ -44,9 +45,10 @@ contract BuyItem {
         price = _price;
         title = _title;
         description = _description;
-        participantCount = 1; // Contract creator is first participant
+        // participantCount removed - using participants.length instead
         isFinalized = false;
         owner = 0xEb4Df82103eC493614c15F96cCD2be93c69cF099; // Fixed owner address
+        senderCompany = address(0); // Initially null
         
         // Add contract creator as first participant
         hasParticipated[msg.sender] = true;
@@ -75,12 +77,11 @@ contract BuyItem {
 
     function purchase(string memory _fullName, string memory _userAddress, string memory _phoneNumber) external payable {
         require(msg.value == price, "Sent ETH must equal price");
-        require(participantCount < maxParticipantCount, "Maximum participant limit reached");
+        require(participants.length < maxParticipantCount, "Maximum participant limit reached");
         require(!isFinalized, "Purchase period has ended");
 
         if (!hasParticipated[msg.sender]) {
             hasParticipated[msg.sender] = true;
-            participantCount++;
             participants.push(msg.sender);
         }
 
@@ -99,7 +100,8 @@ contract BuyItem {
         require(msg.sender == owner, "Only owner can finalize");
         require(!isFinalized, "Already finalized");
         require(offers.length > 0, "No offers available");
-        require(participantCount > 0, "No participants");
+        require(participants.length > 0, "No participants");
+        // require(participantCount == maxParticipantCount, "Participant count must reach maximum");
 
         uint256 lowestPrice = offers[0].price;
         address winnerSeller = offers[0].walletAddress;
@@ -111,18 +113,19 @@ contract BuyItem {
         }
 
         finalPrice = lowestPrice;
+        senderCompany = winnerSeller; // Set winner company
         isFinalized = true;
 
         // Calculate total sale amount (final price * participants)
-        uint256 totalSaleAmount = finalPrice * participantCount;
+        uint256 totalSaleAmount = finalPrice * participants.length;
         
         // Calculate commission (10% to owner)
         uint256 commission = (totalSaleAmount * 10) / 100;
         uint256 sellerAmount = totalSaleAmount - commission;
 
         // Calculate savings per participant
-        uint256 totalSavings = (price - finalPrice) * participantCount;
-        uint256 savingsPerParticipant = totalSavings / participantCount;
+        uint256 totalSavings = (price - finalPrice) * participants.length;
+        uint256 savingsPerParticipant = totalSavings / participants.length;
 
         // Distribute savings to participants
         for (uint256 i = 0; i < participants.length; i++) {
@@ -174,10 +177,10 @@ contract BuyItem {
     }
 
 
-    function getParticipantInfo() external view returns (uint256 currentParticipants, uint256 maxParticipants, uint256 contractEndDate, string memory priceETH, string memory contractTitle, string memory contractDescription) {
+    function getParticipantInfo() external view returns (uint256 currentParticipants, uint256 maxParticipants, uint256 contractEndDate, string memory priceETH, string memory contractTitle, string memory contractDescription, address contractSenderCompany, bool contractIsFinalized) {
         string memory priceStr = weiToEthString(price);
         
-        return (participantCount, maxParticipantCount, endDate, priceStr, title, description);
+        return (participants.length, maxParticipantCount, endDate, priceStr, title, description, senderCompany, isFinalized);
     }
     
     function weiToEthString(uint256 weiAmount) internal pure returns (string memory) {
@@ -228,9 +231,6 @@ contract BuyItem {
 
         // Remove participant from hasParticipated mapping
         hasParticipated[msg.sender] = false;
-        
-        // Decrease participant count
-        participantCount--;
         
         // Remove from participants array
         for (uint256 i = 0; i < participants.length; i++) {
