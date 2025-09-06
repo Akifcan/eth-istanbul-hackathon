@@ -107,6 +107,26 @@ export default function LoginPage() {
                   </button>
                 </div>
 
+                {/* Alternative Login */}
+                <div className="border-t border-gray-700 pt-6 mb-6">
+                  <div className="text-center mb-4">
+                    <span className="text-xs text-gray-500">Or</span>
+                  </div>
+                  <Link
+                    href="/login/corparate"
+                    className="w-full bg-blue-600 hover:bg-blue-700 border border-blue-500 rounded-2xl p-4 transition-all duration-300 flex items-center gap-4"
+                  >
+                    <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                      <div className="text-2xl">🏢</div>
+                    </div>
+                    <div className="text-left flex-1">
+                      <div className="font-semibold text-white">Corporate Login</div>
+                      <div className="text-xs text-blue-200">Business accounts with email</div>
+                    </div>
+                    <div className="text-blue-200">→</div>
+                  </Link>
+                </div>
+
                 {/* Footer */}
                 <div className="text-center space-y-4">
                   <div className="text-xs text-gray-500">
