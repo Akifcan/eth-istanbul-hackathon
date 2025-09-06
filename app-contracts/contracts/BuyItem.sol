@@ -50,7 +50,6 @@ contract BuyItem {
     }
 
     function submitOffer(uint256 _price, string memory _productName, string memory _productLink) external payable {
-        require(msg.value == price, "Must send exact campaign price to submit offer");
         require(participants.length < maxParticipantCount, "Maximum participant limit reached");
         require(!isFinalized, "Offer submission period has ended");
         require(block.timestamp <= endDate, "Campaign has expired");
