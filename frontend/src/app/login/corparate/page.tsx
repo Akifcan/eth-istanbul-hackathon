@@ -1,12 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-
-declare global {
-    interface Window {
-        ethereum?: any;
-    }
-}
+import api from '@/config/api';
 
 export default function CorporateLogin() {
     const [isLogin, setIsLogin] = useState(true);
@@ -19,8 +14,14 @@ export default function CorporateLogin() {
     });
     const [isLoading, setIsLoading] = useState(false);
     const [isConnecting, setIsConnecting] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        // Clear error when user starts typing
+        if (error) setError('');
+        if (success) setSuccess('');
+        
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
@@ -56,12 +57,65 @@ export default function CorporateLogin() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        
-        // Simulate API call
-        setTimeout(() => {
+        setError('');
+        setSuccess('');
+
+        try {
+            if (isLogin) {
+                // Login logic (placeholder for now)
+                console.log('Login attempt:', formData);
+                // TODO: Implement login API call
+            } else {
+                // Registration logic
+                if (formData.password !== formData.confirmPassword) {
+                    setError('Passwords do not match');
+                    setIsLoading(false);
+                    return;
+                }
+
+                if (formData.password.length < 6) {
+                    setError('Password must be at least 6 characters');
+                    setIsLoading(false);
+                    return;
+                }
+
+                if (!formData.walletAddress) {
+                    setError('Please connect your wallet');
+                    setIsLoading(false);
+                    return;
+                }
+
+                // Call registration API
+                const response = await api.post('/register', {
+                    email: formData.email,
+                    wallet: formData.walletAddress,
+                    password: formData.password,
+                    photoUrl: formData.profilePhoto || 'https://via.placeholder.com/150'
+                });
+
+                if (response.status === 201 || response.status === 200) {
+                    setSuccess('Registration successful! Please log in to continue.');
+                    // Switch to login tab after successful registration
+                    setTimeout(() => {
+                        setIsLogin(true);
+                        setSuccess('Registration successful! Please log in to continue.');
+                    }, 1500);
+                } else {
+                    setError('Registration failed. Please try again.');
+                }
+            }
+        } catch (error: any) {
+            console.error('Error:', error);
+            if (error.response?.data?.message) {
+                setError(error.response.data.message);
+            } else if (error.response?.status === 409) {
+                setError('Email or wallet address already exists');
+            } else {
+                setError('An error occurred. Please try again.');
+            }
+        } finally {
             setIsLoading(false);
-            console.log(isLogin ? 'Login attempt:' : 'Register attempt:', formData);
-        }, 2000);
+        }
     };
 
     return (
@@ -82,6 +136,24 @@ export default function CorporateLogin() {
                         }
                     </p>
                 </div>
+
+                {/* Error Message */}
+                {error && (
+                    <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 flex items-center gap-3">
+                        <div className="text-red-400 text-sm">
+                            <span className="font-semibold">Error:</span> {error}
+                        </div>
+                    </div>
+                )}
+
+                {/* Success Message */}
+                {success && (
+                    <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-4 flex items-center gap-3">
+                        <div className="text-green-400 text-sm">
+                            <span className="font-semibold">Success:</span> {success}
+                        </div>
+                    </div>
+                )}
 
                 {/* Form */}
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -159,14 +231,14 @@ export default function CorporateLogin() {
                                         placeholder="https://example.com/profile.jpg"
                                     />
                                     <p className="text-xs text-gray-500 mt-1">
-                                        Optional: Add a profile photo URL
+                                        Optional: Add a profile photo URL (defaults to placeholder if empty)
                                     </p>
                                     {formData.profilePhoto && (
                                         <div className="mt-2">
                                             <img 
                                                 src={formData.profilePhoto} 
                                                 alt="Profile preview"
-                                                className="w-12 h-12 rounded-full object-cover border border-gray-600"
+                                                className="object-contain w-12 h-12 rounded-full object-cover border border-gray-600"
                                                 onError={(e) => {
                                                     e.currentTarget.style.display = 'none';
                                                 }}
@@ -238,7 +310,7 @@ export default function CorporateLogin() {
                     <div>
                         <button
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || !!success}
                             className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                             {isLoading ? (
