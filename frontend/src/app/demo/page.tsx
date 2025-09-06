@@ -14,15 +14,42 @@ const { abi, bytecode } = contractArtifact;
 export default function Demo() {
     const [account, setAccount] = useState<string>('');
     const [isConnecting, setIsConnecting] = useState(false);
-    const [contractAddress, setContractAddress] = useState<string>('0x7DF7243B3B07393ca1236c43eAeec65440D657a6');
+    const [contractAddress, setContractAddress] = useState<string>('0x2D868Cc128fdA4EA9C33C7d0C5dE146528d38487');
     const [participantInfo, setParticipantInfo] = useState<any>(null);
+    const [offers, setOffers] = useState<any[]>([]);
+    const [purchases, setPurchases] = useState<any[]>([]);
+    const [fullName, setFullName] = useState<string>('');
+    const [userAddress, setUserAddress] = useState<string>('');
+    const [phoneNumber, setPhoneNumber] = useState<string>('');
+    const [creatorName, setCreatorName] = useState<string>('');
+    const [creatorAddress, setCreatorAddress] = useState<string>('');
+    const [creatorPhone, setCreatorPhone] = useState<string>('');
+    const [contractTitle, setContractTitle] = useState<string>('');
+    const [contractDescription, setContractDescription] = useState<string>('');
+    const [maxParticipantCount, setMaxParticipantCount] = useState<string>('');
+    const [contractPrice, setContractPrice] = useState<string>('');
 
     const handleDeploy = async () => {
-
         try {
-
             if (!window.ethereum) {
                 alert("Metamask gerekli!");
+                return;
+            }
+
+            if (!contractTitle || !contractDescription || !maxParticipantCount || !contractPrice || !creatorName || !creatorAddress || !creatorPhone) {
+                alert("Lütfen tüm bilgileri doldurun!");
+                return;
+            }
+
+            const participantCount = parseInt(maxParticipantCount);
+            if (isNaN(participantCount) || participantCount < 2) {
+                alert("Max katılımcı sayısı en az 2 olmalıdır!");
+                return;
+            }
+
+            const priceNum = parseFloat(contractPrice);
+            if (isNaN(priceNum) || priceNum <= 0) {
+                alert("Geçerli bir fiyat girin!");
                 return;
             }
 
@@ -32,17 +59,21 @@ export default function Demo() {
 
             const factory = new ethers.ContractFactory(abi, bytecode, signer);
 
-            // Constructor parametreleri
-            const endDate = Math.floor(Date.now() / 1000) + 60 * 60 * 24; // 1 gün sonrası
-            const maxParticipantCount = 50;
-            const productId = 5;
-            const productSlug = "iphone-16";
-            const normalPrice = ethers.parseEther("0.002"); // 0.002 ETH normal price
-            const discountedPrice = ethers.parseEther("0.001"); // 0.001 ETH discounted price
+            // Constructor parametreleri - yeni contract yapısına göre
+            const price = ethers.parseEther(contractPrice);
 
-            console.log("START")
+            console.log("Deploying contract with creator info...");
 
-            const contract = await factory.deploy(endDate, maxParticipantCount, productId, productSlug, normalPrice, discountedPrice);
+            const contract = await factory.deploy(
+                participantCount, 
+                price, 
+                contractTitle,
+                contractDescription,
+                creatorName, 
+                creatorAddress, 
+                creatorPhone,
+                { value: price } // Contract creator must pay the price
+            );
 
             await contract.waitForDeployment();
 
@@ -50,10 +81,21 @@ export default function Demo() {
             setContractAddress(address);
             console.log('Contract deployed at:', address);
 
-        } catch (e) {
-            console.log(e)
-        }
+            // Clear creator form
+            setContractTitle('');
+            setContractDescription('');
+            setMaxParticipantCount('');
+            setContractPrice('');
+            setCreatorName('');
+            setCreatorAddress('');
+            setCreatorPhone('');
 
+            alert(`Contract deployed successfully at: ${address}`);
+
+        } catch (e) {
+            console.error('Deployment failed:', e);
+            alert(`Deployment failed: ${e}`);
+        }
     }
 
     const getParticipantInfo = async (contractAddr: string) => {
@@ -73,10 +115,9 @@ export default function Demo() {
                 currentParticipants: result[0],
                 maxParticipants: result[1],
                 contractEndDate: result[2].toString(),
-                contractProductId: result[3],
-                contractProductSlug: result[4],
-                normalPriceETH: result[5],
-                discountedPriceETH: result[6]
+                priceETH: result[3],
+                contractTitle: result[4],
+                contractDescription: result[5]
             };
 
             console.log('Participant Info:', info);
@@ -95,17 +136,22 @@ export default function Demo() {
                 return;
             }
 
+            if (!fullName || !userAddress || !phoneNumber) {
+                alert("Lütfen tüm bilgileri doldurun!");
+                return;
+            }
+
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
             const contract = new ethers.Contract(contractAddr, abi, signer);
 
-            console.log('Making purchase with discounted price...');
+            console.log('Making purchase...');
             
-            const discountedPrice = await contract.discountedPrice();
+            const price = await contract.price();
             
-            console.log('Discounted price:', ethers.formatEther(discountedPrice), 'ETH');
+            console.log('Price:', ethers.formatEther(price), 'ETH');
             
-            const tx = await contract.purchase({ value: discountedPrice });
+            const tx = await contract.purchase(fullName, userAddress, phoneNumber, { value: price });
             
             console.log('Transaction sent:', tx.hash);
             alert(`Transaction sent: ${tx.hash}`);
@@ -114,11 +160,94 @@ export default function Demo() {
             console.log('Transaction confirmed:', receipt);
             alert('Purchase successful!');
 
+            // Clear form
+            setFullName('');
+            setUserAddress('');
+            setPhoneNumber('');
+
             await getParticipantInfo(contractAddr);
 
         } catch (error: any) {
             console.error('Error making purchase:', error);
             alert(`Purchase failed: ${error.message || error}`);
+        }
+    };
+
+    const getOffers = async (contractAddr: string) => {
+        try {
+            if (!window.ethereum) {
+                alert("MetaMask gerekli!");
+                return;
+            }
+
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const contract = new ethers.Contract(contractAddr, abi, provider);
+
+            console.log('Getting offers...');
+            const result = await contract.getOffers();
+            setOffers(result);
+            console.log('Offers:', result);
+
+        } catch (error) {
+            console.error('Error getting offers:', error);
+            alert('Failed to get offers');
+        }
+    };
+
+    const getAllPurchases = async (contractAddr: string) => {
+        try {
+            if (!window.ethereum) {
+                alert("MetaMask gerekli!");
+                return;
+            }
+
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const contract = new ethers.Contract(contractAddr, abi, provider);
+
+            console.log('Getting all purchases...');
+            const result = await contract.getAllPurchases();
+            setPurchases(result);
+            console.log('All Purchases:', result);
+
+        } catch (error) {
+            console.error('Error getting purchases:', error);
+            alert('Failed to get purchases');
+        }
+    };
+
+    const submitOffer = async (contractAddr: string, price: string, productName: string, productLink: string) => {
+        try {
+            if (!window.ethereum) {
+                alert("MetaMask gerekli!");
+                return;
+            }
+
+            if (!price || !productName || !productLink) {
+                alert("Lütfen tüm teklif bilgilerini doldurun!");
+                return;
+            }
+
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+            const contract = new ethers.Contract(contractAddr, abi, signer);
+
+            console.log('Submitting offer...');
+            
+            const priceInWei = ethers.parseEther(price);
+            const tx = await contract.submitOffer(priceInWei, productName, productLink);
+            
+            console.log('Transaction sent:', tx.hash);
+            alert(`Offer submitted: ${tx.hash}`);
+            
+            const receipt = await tx.wait();
+            console.log('Transaction confirmed:', receipt);
+            alert('Offer submitted successfully!');
+
+            await getOffers(contractAddr);
+
+        } catch (error: any) {
+            console.error('Error submitting offer:', error);
+            alert(`Offer submission failed: ${error.message || error}`);
         }
     };
 
@@ -174,18 +303,77 @@ export default function Demo() {
                     >
                         Disconnect Wallet
                     </button>
-                    <button 
-                        onClick={handleDeploy}
-                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mr-4"
-                    >
-                        Deploy Contract
-                    </button>
+                    
+                    <div className="mt-4 bg-gray-800 p-4 rounded">
+                        <h4 className="font-bold mb-2 text-white">Deploy New Contract:</h4>
+                        <div className="space-y-2 mb-4">
+                            <input
+                                type="text"
+                                placeholder="Contract Title"
+                                value={contractTitle}
+                                onChange={(e) => setContractTitle(e.target.value)}
+                                className="w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded placeholder-gray-400"
+                            />
+                            <textarea
+                                placeholder="Contract Description"
+                                value={contractDescription}
+                                onChange={(e) => setContractDescription(e.target.value)}
+                                rows={3}
+                                className="w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded placeholder-gray-400"
+                            />
+                            <input
+                                type="number"
+                                placeholder="Max Participant Count (min: 2)"
+                                value={maxParticipantCount}
+                                onChange={(e) => setMaxParticipantCount(e.target.value)}
+                                min="2"
+                                className="w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded placeholder-gray-400"
+                            />
+                            <input
+                                type="number"
+                                placeholder="Price (ETH) - e.g., 0.002"
+                                value={contractPrice}
+                                onChange={(e) => setContractPrice(e.target.value)}
+                                step="0.001"
+                                min="0"
+                                className="w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded placeholder-gray-400"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Creator Full Name"
+                                value={creatorName}
+                                onChange={(e) => setCreatorName(e.target.value)}
+                                className="w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded placeholder-gray-400"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Creator Address"
+                                value={creatorAddress}
+                                onChange={(e) => setCreatorAddress(e.target.value)}
+                                className="w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded placeholder-gray-400"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Creator Phone Number"
+                                value={creatorPhone}
+                                onChange={(e) => setCreatorPhone(e.target.value)}
+                                className="w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded placeholder-gray-400"
+                            />
+                            <button 
+                                onClick={handleDeploy}
+                                className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                                disabled={!contractTitle || !contractDescription || !maxParticipantCount || !contractPrice || !creatorName || !creatorAddress || !creatorPhone}
+                            >
+                                Deploy Contract (Pay {contractPrice || '0'} ETH)
+                            </button>
+                        </div>
+                    </div>
                     
                     {contractAddress && (
                         <>
                             <div className="mt-4">
                                 <p className="text-green-600">✅ Contract deployed at:</p>
-                                <p className="font-mono text-sm bg-gray-100 p-2 rounded mb-4">
+                                <p className="font-mono text-sm bg-gray-800 text-white p-2 rounded mb-4">
                                     {contractAddress}
                                 </p>
                                 <button 
@@ -195,32 +383,100 @@ export default function Demo() {
                                     Get Participant Info
                                 </button>
                                 
-                                <div className="mt-4">
-                                    <h4 className="font-bold mb-2">Make Purchase:</h4>
-                                    <div className="flex gap-2">
-                                       
+                                <div className="mt-4 bg-gray-800 p-4 rounded">
+                                    <h4 className="font-bold mb-2 text-white">Make Purchase:</h4>
+                                    <div className="space-y-2 mb-4">
+                                        <input
+                                            type="text"
+                                            placeholder="Full Name"
+                                            value={fullName}
+                                            onChange={(e) => setFullName(e.target.value)}
+                                            className="w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded placeholder-gray-400"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Address"
+                                            value={userAddress}
+                                            onChange={(e) => setUserAddress(e.target.value)}
+                                            className="w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded placeholder-gray-400"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Phone Number"
+                                            value={phoneNumber}
+                                            onChange={(e) => setPhoneNumber(e.target.value)}
+                                            className="w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded placeholder-gray-400"
+                                        />
                                         <button 
                                             onClick={() => handlePurchase(contractAddress)}
-                                            className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+                                            className="w-full px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
+                                            disabled={!fullName || !userAddress || !phoneNumber}
                                         >
                                             Purchase
                                         </button>
                                     </div>
+                                </div>
+
+                                <div className="mt-4">
+                                    <button 
+                                        onClick={() => getOffers(contractAddress)}
+                                        className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 mr-4"
+                                    >
+                                        Get Offers
+                                    </button>
+                                    <button 
+                                        onClick={() => getAllPurchases(contractAddress)}
+                                        className="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600"
+                                    >
+                                        Get All Purchases
+                                    </button>
                                 </div>
                             </div>
                         </>
                     )}
 
                     {participantInfo && (
-                        <div className="mt-4 bg-gray-100 p-4 rounded">
-                            <h3 className="font-bold mb-2">Participant Info:</h3>
-                            <p>Current Participants: {participantInfo.currentParticipants}</p>
-                            <p>Max Participants: {participantInfo.maxParticipants}</p>
-                            <p>End Date: {new Date(parseInt(participantInfo.contractEndDate) * 1000).toLocaleString()}</p>
-                            <p>Product ID: {participantInfo.contractProductId}</p>
-                            <p>Product Slug: {participantInfo.contractProductSlug}</p>
-                            <p className="text-red-600">Normal Price: {participantInfo.normalPriceETH}</p>
-                            <p className="text-green-600">Discounted Price: {participantInfo.discountedPriceETH}</p>
+                        <div className="mt-4 bg-gray-800 p-4 rounded">
+                            <h3 className="font-bold mb-2 text-white">Contract Info:</h3>
+                            <p className="text-white"><strong>Title:</strong> {participantInfo.contractTitle}</p>
+                            <p className="text-white"><strong>Description:</strong> {participantInfo.contractDescription}</p>
+                            <p className="text-white">Current Participants: {participantInfo.currentParticipants}</p>
+                            <p className="text-white">Max Participants: {participantInfo.maxParticipants}</p>
+                            <p className="text-white">End Date: {new Date(parseInt(participantInfo.contractEndDate) * 1000).toLocaleString()}</p>
+                            <p className="text-blue-400">Price: {participantInfo.priceETH}</p>
+                        </div>
+                    )}
+
+                    {offers.length > 0 && (
+                        <div className="mt-4 bg-gray-800 p-4 rounded">
+                            <h3 className="font-bold mb-2 text-white">Offers ({offers.length}):</h3>
+                            <div className="space-y-2">
+                                {offers.map((offer: any, index: number) => (
+                                    <div key={index} className="bg-gray-700 p-3 rounded border border-gray-600">
+                                        <p className="text-white"><strong>Price:</strong> {ethers.formatEther(offer.price)} ETH</p>
+                                        <p className="text-white"><strong>Product:</strong> {offer.productName}</p>
+                                        <p className="text-white"><strong>Link:</strong> <a href={offer.productLink} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">{offer.productLink}</a></p>
+                                        <p className="text-white"><strong>Seller:</strong> {offer.walletAddress}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {purchases.length > 0 && (
+                        <div className="mt-4 bg-gray-800 p-4 rounded">
+                            <h3 className="font-bold mb-2 text-white">All Purchases ({purchases.length}):</h3>
+                            <div className="space-y-2 max-h-60 overflow-y-auto">
+                                {purchases.map((purchase: any, index: number) => (
+                                    <div key={index} className="bg-gray-700 p-3 rounded border border-gray-600">
+                                        <p className="text-white"><strong>Amount:</strong> {ethers.formatEther(purchase.amount)} ETH</p>
+                                        <p className="text-white"><strong>Name:</strong> {purchase.fullName}</p>
+                                        <p className="text-white"><strong>Address:</strong> {purchase.userAddress}</p>
+                                        <p className="text-white"><strong>Phone:</strong> {purchase.phoneNumber}</p>
+                                        <p className="text-white"><strong>Date:</strong> {new Date(parseInt(purchase.timestamp) * 1000).toLocaleString()}</p>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>
