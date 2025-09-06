@@ -57,4 +57,9 @@ export class AppController {
         return this.appService.getOffersByWallet(wallet);
     }
 
+    @Get('seller/:email')
+    async seller(@Param('email') email: string): Promise<Seller | null> {
+        return this.appService.getSellerByEmail(email);
+    }
+
 }

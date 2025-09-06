@@ -136,4 +136,18 @@ export class AppService {
     
     return campaign;
   }
+
+  async getSellerByEmail(email: string): Promise<Seller | null> {
+    const seller = await this.sellerRepository.findOne({
+      where: { email }
+    });
+    
+    if (!seller) {
+      return null;
+    }
+    
+    // Return seller without password
+    const { password: _, ...sellerWithoutPassword } = seller;
+    return sellerWithoutPassword as Seller;
+  }
 }

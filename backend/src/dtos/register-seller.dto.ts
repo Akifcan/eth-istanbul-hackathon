@@ -1,6 +1,10 @@
 import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export class RegisterSellerDto {
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
   @IsEmail()
   @IsNotEmpty()
   email: string;

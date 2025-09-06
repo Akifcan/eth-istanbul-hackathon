@@ -10,6 +10,7 @@ export default function CorporateLogin() {
     const router = useRouter();
     const { setUser } = useUserStore();
     const [formData, setFormData] = useState({
+        name: '',
         email: '',
         password: '',
         confirmPassword: '',
@@ -99,7 +100,7 @@ export default function CorporateLogin() {
                     setUser({
                         address: formData.walletAddress || currentAddress, // Use wallet from form or current MetaMask address
                         profilePhoto: sellerData.photoUrl,
-                        name: sellerData.email.split('@')[0], // Use email prefix as name
+                        name: sellerData.name || sellerData.email.split('@')[0], // Use name from API or email prefix as fallback
                         email: sellerData.email
                     });
 
@@ -114,6 +115,12 @@ export default function CorporateLogin() {
                 }
             } else {
                 // Registration logic
+                if (!formData.name || !formData.email || !formData.password) {
+                    setError('Please fill in all required fields');
+                    setIsLoading(false);
+                    return;
+                }
+
                 if (formData.password !== formData.confirmPassword) {
                     setError('Passwords do not match');
                     setIsLoading(false);
@@ -134,6 +141,7 @@ export default function CorporateLogin() {
 
                 // Call registration API
                 const response = await api.post('/register', {
+                    name: formData.name,
                     email: formData.email,
                     password: formData.password,
                     photoUrl: formData.profilePhoto || 'https://via.placeholder.com/150'
@@ -236,6 +244,22 @@ export default function CorporateLogin() {
                         {/* Registration Fields */}
                         {!isLogin && (
                             <>
+                                <div>
+                                    <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+                                        Company Name
+                                    </label>
+                                    <input
+                                        id="name"
+                                        name="name"
+                                        type="text"
+                                        required
+                                        value={formData.name}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                                        placeholder="Your company name"
+                                    />
+                                </div>
+
                                 <div>
                                     <label htmlFor="walletAddress" className="block text-sm font-medium text-gray-300 mb-2">
                                         MetaMask Wallet Address

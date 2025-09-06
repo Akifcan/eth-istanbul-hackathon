@@ -35,8 +35,14 @@ export default function OffersList({ contractAddress, refreshTrigger }: OffersLi
 
       console.log('Getting offers...');
       const result = await contract.getOffers();
-      setOffers(result);
-      console.log('Offers:', result);
+      
+      // Sort offers by price (lowest first)
+      const sortedOffers = [...result].sort((a: Offer, b: Offer) => {
+        return Number(a.price - b.price);
+      });
+      
+      setOffers(sortedOffers);
+      console.log('Offers:', sortedOffers);
       
     } catch (error) {
       console.error('Error getting offers:', error);
@@ -155,7 +161,7 @@ export default function OffersList({ contractAddress, refreshTrigger }: OffersLi
       </div>
       
       <div className="mt-4 text-sm text-gray-400">
-        * Offers are sorted by submission order. Campaign creator will select the best offer.
+        * Offers are sorted by price (lowest first). Campaign creator will select the best offer.
       </div>
     </div>
   );
