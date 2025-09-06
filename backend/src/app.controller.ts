@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Param } from '@nestjs/common';
 import { AppService } from './app.service';
 import { CreateCampaignDto } from './dtos/create-campaign.dto';
 import { RegisterSellerDto } from './dtos/register-seller.dto';
@@ -37,10 +37,19 @@ export class AppController {
   }
 
   @Get('campaigns')
-  async getCampaigns(@Query('createdWallet') createdWallet?: string): Promise<Campaign[]> {
+  async getCampaigns(
+    @Query('createdWallet') createdWallet?: string,
+    @Query('limit') limit?: number
+  ): Promise<Campaign[]> {
     if (createdWallet) {
-      return this.appService.getCampaignsByCreatedWallet(createdWallet);
+      return this.appService.getCampaignsByCreatedWallet(createdWallet, limit);
     }
-    return this.appService.getAllCampaigns();
+    return this.appService.getAllCampaigns(limit);
   }
+
+    @Get('offers/:wallet')
+    async offers(@Param('wallet') wallet: string): Promise<any> {
+        return this.appService.getOffersByWallet(wallet);
+    }
+
 }

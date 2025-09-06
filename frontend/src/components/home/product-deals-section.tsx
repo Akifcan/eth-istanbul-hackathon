@@ -2,7 +2,6 @@
 import { ArrowRight, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
 import api from '@/config/api';
 import CampaignCard from '../campaign.card';
 
@@ -10,7 +9,7 @@ export default function ProductDealsSection() {
   const { data: campaigns, isLoading, isError } = useQuery({
     queryKey: ['campaigns'],
     queryFn: async () => {
-      return await api.get<CampaignProps[]>('/campaigns')
+      return await api.get<CampaignProps[]>('/campaigns?limit=3')
     }
   });
 

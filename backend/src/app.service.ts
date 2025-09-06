@@ -37,14 +37,29 @@ export class AppService {
     return campaign
   }
 
-  async getAllCampaigns(): Promise<Campaign[]> {
-    return await this.campaignRepository.find();
+  async getAllCampaigns(limit?: number): Promise<Campaign[]> {
+    const options: any = {
+      order: {
+        createdAt: 'DESC'
+      }
+    };
+    if (limit) {
+      options.take = limit;
+    }
+    return await this.campaignRepository.find(options);
   }
 
-  async getCampaignsByCreatedWallet(createdWallet: string): Promise<Campaign[]> {
-    return await this.campaignRepository.find({
+  async getCampaignsByCreatedWallet(createdWallet: string, limit?: number): Promise<Campaign[]> {
+    const options: any = {
       where: { createdWallet },
-    });
+      order: {
+        createdAt: 'DESC'
+      }
+    };
+    if (limit) {
+      options.take = limit;
+    }
+    return await this.campaignRepository.find(options);
   }
 
   async registerSeller(registerSellerDto: RegisterSellerDto): Promise<Seller> {
@@ -96,5 +111,14 @@ export class AppService {
     });
     
     return await this.offersRepository.save(offer);
+  }
+
+  async getOffersByWallet(wallet: string): Promise<Offers[]> {
+    return await this.offersRepository.find({
+      where: { wallet },
+      order: {
+        createdAt: 'DESC'
+      }
+    });
   }
 }

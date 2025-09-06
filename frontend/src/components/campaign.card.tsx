@@ -8,7 +8,7 @@ import useUserStore from '../store/user';
 
 const { abi } = contractArtifact;
 
-export default function CampaignCard({ campaign }: {campaign: CampaignProps}) {
+export default function CampaignCard({ campaign, hideBadge = false }: {campaign: CampaignProps, hideBadge?: boolean}) {
     const [contractInfo, setContractInfo] = useState<ContractInfo | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -137,7 +137,7 @@ export default function CampaignCard({ campaign }: {campaign: CampaignProps}) {
                         
                         <div className="ml-3 flex flex-col gap-2">
                             {/* Offer Status Badge - Only for Corporate Users */}
-                            {isCorporateUser && (
+                            {isCorporateUser && !hideBadge && (
                                 <div className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${offerStatus.className}`}>
                                     <offerStatus.icon className="w-3 h-3" />
                                     {offerStatus.text}
