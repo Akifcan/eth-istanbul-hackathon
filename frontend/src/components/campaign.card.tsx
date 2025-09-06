@@ -2,8 +2,9 @@
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import contractArtifact from "@/contract/BuyItem/BuyItem.json";
-import { Users, DollarSign, Package, AlertCircle, Loader } from 'lucide-react';
+import { Users, DollarSign, Package, AlertCircle, Loader, Clock, CheckCircle, Zap } from 'lucide-react';
 import Link from 'next/link';
+import useUserStore from '../store/user';
 
 const { abi } = contractArtifact;
 
@@ -11,6 +12,43 @@ export default function CampaignCard({ campaign }: {campaign: CampaignProps}) {
     const [contractInfo, setContractInfo] = useState<ContractInfo | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const { user } = useUserStore();
+
+    // Helper function to check if senderCompany is empty/null (0x0000...)
+    const isOfferPending = (senderCompany: string) => {
+        return !senderCompany || 
+               senderCompany === '0x0000000000000000000000000000000000000000' || 
+               senderCompany === ethers.ZeroAddress;
+    };
+
+    // Helper function to check if current user is the selected company
+    const isCurrentUserSelected = (senderCompany: string) => {
+        return user && user.address && 
+               senderCompany.toLowerCase() === user.address.toLowerCase();
+    };
+
+    // Get offer status badge info
+    const getOfferStatus = (contractInfo: ContractInfo) => {
+        if (isOfferPending(contractInfo.senderCompany)) {
+            return {
+                text: 'SUBMIT OFFER NOW!',
+                icon: Zap,
+                className: 'bg-gradient-to-r from-yellow-500/30 to-orange-500/30 text-yellow-200 border-2 border-yellow-400/50 animate-pulse shadow-lg shadow-yellow-500/20 font-bold text-sm'
+            };
+        } else if (isCurrentUserSelected(contractInfo.senderCompany)) {
+            return {
+                text: 'Your Offer Approved',
+                icon: CheckCircle,
+                className: 'bg-green-500/20 text-green-300 border border-green-500/30'
+            };
+        } else {
+            return {
+                text: 'Offer Completed',
+                icon: Clock,
+                className: 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+            };
+        }
+    };
 
     const getContractInfo = async () => {
         try {
@@ -75,6 +113,10 @@ export default function CampaignCard({ campaign }: {campaign: CampaignProps}) {
     }
 
     const progressPercentage = Number(contractInfo.currentParticipants) / Number(contractInfo.maxParticipants) * 100;
+    const offerStatus = getOfferStatus(contractInfo);
+    
+    // Check if user is corporate (has profilePhoto, name, and email)
+    const isCorporateUser = user && user.profilePhoto && user.name && user.email;
 
     return (
         <Link href={`/campaign/${campaign.transaction}`} className="block group">
@@ -86,18 +128,30 @@ export default function CampaignCard({ campaign }: {campaign: CampaignProps}) {
                 {/* Content */}
                 <div className="relative p-6 z-10">
                     
-                    {/* Header with Status Badge */}
+                    {/* Header with Offer Status Badge */}
                     <div className="flex justify-between items-start mb-6">
                         <div className="flex-1">
                             <h3 className="text-lg font-bold text-white mb-2 line-clamp-2 group-hover:text-blue-300 transition-colors duration-300">{contractInfo.contractTitle}</h3>
                             <p className="text-gray-400 text-xs line-clamp-2">{contractInfo.contractDescription}</p>
                         </div>
-                        <div className={`px-3 py-1 rounded-full text-xs font-medium ml-3 ${
-                            contractInfo.isFinalized 
-                                ? 'bg-red-500/20 text-red-300 border border-red-500/30' 
-                                : 'bg-green-500/20 text-green-300 border border-green-500/30'
-                        }`}>
-                            {contractInfo.isFinalized ? 'Finished' : 'Active'}
+                        
+                        <div className="ml-3 flex flex-col gap-2">
+                            {/* Offer Status Badge - Only for Corporate Users */}
+                            {isCorporateUser && (
+                                <div className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${offerStatus.className}`}>
+                                    <offerStatus.icon className="w-3 h-3" />
+                                    {offerStatus.text}
+                                </div>
+                            )}
+                            
+                            {/* Campaign Status Badge */}
+                            <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                contractInfo.isFinalized 
+                                    ? 'bg-red-500/20 text-red-300 border border-red-500/30' 
+                                    : 'bg-green-500/20 text-green-300 border border-green-500/30'
+                            }`}>
+                                {contractInfo.isFinalized ? 'Finished' : 'Active'}
+                            </div>
                         </div>
                     </div>
 
