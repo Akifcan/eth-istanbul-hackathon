@@ -23,10 +23,10 @@ export default function Create() {
     const router = useRouter();
 
     useEffect(() => {
-        if(!user){
+        if(user){
             return
         }
-        router.push('/login');
+        router.push('/login')
     }, [user])
     
     
@@ -126,7 +126,7 @@ export default function Create() {
             // Send to backend API
             try {
                 await api.post('/campaigns', {
-                    transaction: contractAddress,
+                    transaction: address,
                     createdWallet: user.address
                 });
             } catch (error) {
