@@ -8,13 +8,8 @@ import { ArrowLeft, Users, Clock, DollarSign, Package, CheckCircle, AlertCircle,
 import Link from 'next/link';
 import OfferForm from '../../../components/offer-form';
 import JoinCampaignSidebar from '@/components/join-campaign-sidebar';
+import WithdrawSidebar from '../../../components/withdraw-sidebar';
 import OffersList from '../../../components/offers-list';
-
-declare global {
-    interface Window {
-        ethereum?: any;
-    }
-}
 
 const { abi } = contractArtifact;
 
@@ -45,6 +40,8 @@ export default function CampaignDetail() {
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [offersRefreshTrigger, setOffersRefreshTrigger] = useState(0);
+    const [isParticipant, setIsParticipant] = useState(false);
+    const [checkingParticipant, setCheckingParticipant] = useState(false);
 
     const copyToClipboard = async (text: string) => {
         try {
@@ -53,6 +50,28 @@ export default function CampaignDetail() {
             setTimeout(() => setSuccessMessage(''), 2000);
         } catch (err) {
             console.error('Failed to copy text: ', err);
+        }
+    };
+
+    const checkIsParticipant = async () => {
+        try {
+            if (!window.ethereum || !user?.address) {
+                return;
+            }
+
+            setCheckingParticipant(true);
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const contract = new ethers.Contract(campaignId, abi, provider);
+
+            console.log('Checking if user is participant...');
+            const result = await contract.isParticipant(user.address);
+            console.log('Is participant:', result);
+            setIsParticipant(result);
+
+        } catch (error) {
+            console.error('Error checking participant status:', error);
+        } finally {
+            setCheckingParticipant(false);
         }
     };
 
@@ -83,6 +102,11 @@ export default function CampaignDetail() {
             console.log('Campaign Info:', info);
             setContractInfo(info);
             setLoading(false);
+
+            // Check if user is participant after getting contract info
+            if (user?.address) {
+                await checkIsParticipant();
+            }
 
         } catch (error) {
             console.error('Error getting campaign info:', error);
@@ -283,8 +307,8 @@ export default function CampaignDetail() {
                             )}
                         </div>
 
-                        {/* Join Campaign Sidebar - Only for Regular Users */}
-                        {!isCorporateUser && (
+                        {/* Join Campaign Sidebar - Only for Regular Users who haven't joined */}
+                        {!isCorporateUser && !isParticipant && (
                             <JoinCampaignSidebar 
                                 contractAddress={campaignId}
                                 contractInfo={{
@@ -294,6 +318,22 @@ export default function CampaignDetail() {
                                 isExpired={isExpired}
                                 onJoinSuccess={() => {
                                     getParticipantInfo(); // Refresh campaign info
+                                }}
+                            />
+                        )}
+
+                        {/* Withdraw Sidebar - Only for Regular Users who have joined */}
+                        {!isCorporateUser && isParticipant && (
+                            <WithdrawSidebar 
+                                contractAddress={campaignId}
+                                contractInfo={{
+                                    priceETH: contractInfo.priceETH,
+                                    isFinalized: contractInfo.isFinalized
+                                }}
+                                isExpired={isExpired}
+                                onWithdrawSuccess={() => {
+                                    getParticipantInfo(); // Refresh campaign info
+                                    checkIsParticipant(); // Recheck participation status
                                 }}
                             />
                         )}
