@@ -6,8 +6,10 @@ import { CreateCampaignDto } from './dtos/create-campaign.dto';
 import { RegisterSellerDto } from './dtos/register-seller.dto';
 import { LoginSellerDto } from './dtos/login-seller.dto';
 import { PurchaseDto } from './dtos/purchase.dto';
+import { CreateOfferDto } from './dtos/create-offer.dto';
 import { Shipping } from './dtos/shipping.entity';
 import { Seller } from './entities/seller.entity';
+import { Offers } from './entities/offers.entity';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -19,6 +21,8 @@ export class AppService {
     private shippingRepository: Repository<Shipping>,
     @InjectRepository(Seller)
     private sellerRepository: Repository<Seller>,
+    @InjectRepository(Offers)
+    private offersRepository: Repository<Offers>,
   ) {}
 
   async createCampaign(createCampaignDto: CreateCampaignDto): Promise<Campaign> {
@@ -83,5 +87,14 @@ export class AppService {
     });
     
     return await this.shippingRepository.save(shipping);
+  }
+
+  async createOffer(createOfferDto: CreateOfferDto): Promise<Offers> {
+    const offer = this.offersRepository.create({
+      contract: createOfferDto.transactionId,
+      wallet: createOfferDto.wallet
+    });
+    
+    return await this.offersRepository.save(offer);
   }
 }

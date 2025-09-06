@@ -10,9 +10,6 @@ export class Seller {
     @Column({unique: true})
     email: string
 
-    @Column({unique: true})
-    wallet: string
-
     @Column()
     password: string
 

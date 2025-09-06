@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { ethers } from 'ethers';
 import contractArtifact from "@/contract/BuyItem/BuyItem.json";
 import { Tag, DollarSign, Package, ExternalLink } from 'lucide-react';
+import api from '../config/api';
 
 const { abi } = contractArtifact;
 
@@ -83,6 +84,22 @@ export default function OfferForm({ contractAddress, onOfferSuccess }: OfferForm
       
       const receipt = await tx.wait();
       console.log('Transaction confirmed:', receipt);
+      
+      // Send offer data to backend
+      try {
+        const signer = await provider.getSigner();
+        const walletAddress = await signer.getAddress();
+        
+        const offerResponse = await api.post('/offer', {
+          transactionId: contractAddress,
+          wallet: walletAddress
+        });
+
+        console.log('Offer data saved to backend:', offerResponse.data);
+      } catch (backendError) {
+        console.error('Backend request failed:', backendError);
+      }
+      
       setSuccess('Offer submitted successfully! Campaign creator will review your offer.');
 
       // Clear form

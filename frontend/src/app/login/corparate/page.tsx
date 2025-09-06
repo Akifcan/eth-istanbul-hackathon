@@ -82,9 +82,22 @@ export default function CorporateLogin() {
                 if (response.status === 200 || response.status === 201) {
                     const sellerData = response.data;
                     
+                    // Get current MetaMask address
+                    let currentAddress = '';
+                    if (window.ethereum) {
+                        try {
+                            const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                            if (accounts.length > 0) {
+                                currentAddress = accounts[0];
+                            }
+                        } catch (error) {
+                            console.error('Error getting MetaMask address:', error);
+                        }
+                    }
+
                     // Update user store with seller information
                     setUser({
-                        address: sellerData.wallet,
+                        address: formData.walletAddress || currentAddress, // Use wallet from form or current MetaMask address
                         profilePhoto: sellerData.photoUrl,
                         name: sellerData.email.split('@')[0], // Use email prefix as name
                         email: sellerData.email
@@ -122,7 +135,6 @@ export default function CorporateLogin() {
                 // Call registration API
                 const response = await api.post('/register', {
                     email: formData.email,
-                    wallet: formData.walletAddress,
                     password: formData.password,
                     photoUrl: formData.profilePhoto || 'https://via.placeholder.com/150'
                 });

@@ -9,10 +9,11 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { Campaign } from './entities/campaign.entity';
 import { Shipping } from './dtos/shipping.entity';
 import { Seller } from './entities/seller.entity';
+import { Offers } from './entities/offers.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Campaign, Shipping, Seller]),
+    TypeOrmModule.forFeature([Campaign, Shipping, Seller, Offers]),
     ConfigModule.forRoot({
       load: [configuration],
       isGlobal: true,

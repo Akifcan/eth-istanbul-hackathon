@@ -7,10 +7,6 @@ export class RegisterSellerDto {
 
   @IsNotEmpty()
   @IsString()
-  wallet: string;
-
-  @IsNotEmpty()
-  @IsString()
   @MinLength(6)
   password: string;
 
