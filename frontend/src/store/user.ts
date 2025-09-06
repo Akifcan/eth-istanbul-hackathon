@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 import { UserProps } from '../types/user'
 
 type Store = {
@@ -8,17 +7,10 @@ type Store = {
   logout: () => void
 }
 
-const useUserStore = create<Store>()(
-  persist(
-    (set) => ({
-      user: undefined,
-      setUser: (user?: UserProps) => set(() => ({ user })),
-      logout: () => set(() => ({ user: undefined }))
-    }),
-    {
-      name: 'ally-buy-user'
-    }
-  )
-)
+const useUserStore = create<Store>()((set) => ({
+  user: undefined,
+  setUser: (user?: UserProps) => set(() => ({ user })),
+  logout: () => set(() => ({ user: undefined }))
+}))
 
 export default useUserStore

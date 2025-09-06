@@ -8,12 +8,4 @@ export class CreateCampaignDto {
   @IsNotEmpty()
   @IsString()
   createdWallet: string;
-
-  @IsNotEmpty()
-  @IsString()
-  contractTitle: string;
-
-  @IsNotEmpty()
-  @IsString()
-  contractDescription: string;
 }

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import contractArtifact from "@/contract/BuyItem/BuyItem.json";
 import useUserStore from '../../store/user';
@@ -21,11 +21,14 @@ type DeploymentState = 'idle' | 'deploying' | 'success' | 'error';
 export default function Create() {
     const { user } = useUserStore();
     const router = useRouter();
-    
-    if (!user) {
+
+    useEffect(() => {
+        if(!user){
+            return
+        }
         router.push('/login');
-        return null;
-    }
+    }, [user])
+    
     
     const [deploymentState, setDeploymentState] = useState<DeploymentState>('idle');
     const [transactionHash, setTransactionHash] = useState<string>('');
