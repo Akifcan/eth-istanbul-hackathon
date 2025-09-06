@@ -1,0 +1,3 @@
+interface UserProps {
+    address: string
+}

@@ -1,7 +1,49 @@
+"use client"
 import { ArrowLeft, Wallet, Shield, Zap, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import useUserStore from '../../store/user';
+
+declare global {
+    interface Window {
+        ethereum?: any;
+    }
+}
 
 export default function LoginPage() {
+  const [isConnecting, setIsConnecting] = useState(false);
+  const { setUser } = useUserStore();
+  const router = useRouter();
+
+  
+  const connectWallet = async () => {
+    if (!window.ethereum) {
+      alert('MetaMask is not installed!');
+      return;
+    }
+
+    setIsConnecting(true);
+    try {
+      const accounts = await window.ethereum.request({
+        method: 'eth_requestAccounts'
+      });
+      
+      if (accounts.length > 0) {
+        setUser({
+          address: accounts[0],
+          name: `User ${accounts[0].slice(0, 6)}...`
+        });
+        router.push('/');
+      }
+    } catch (error) {
+      console.error('Error connecting wallet:', error);
+      alert('Failed to connect wallet');
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
   const features = [
     {
       icon: Shield,
@@ -95,12 +137,22 @@ export default function LoginPage() {
                 <div className="space-y-4 mb-8">
                   
                   {/* MetaMask */}
-                  <button className="w-full bg-gray-800/50 hover:bg-gray-800 border border-gray-700 hover:border-gray-600 rounded-2xl p-4 transition-all duration-300 flex items-center gap-4">
+                  <button 
+                    onClick={connectWallet}
+                    disabled={isConnecting}
+                    className="w-full bg-gray-800/50 hover:bg-gray-800 border border-gray-700 hover:border-gray-600 rounded-2xl p-4 transition-all duration-300 flex items-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
                     <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
-                      <div className="text-2xl">🦊</div>
+                      {isConnecting ? (
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                      ) : (
+                        <div className="text-2xl">🦊</div>
+                      )}
                     </div>
                     <div className="text-left flex-1">
-                      <div className="font-semibold text-white">MetaMask</div>
+                      <div className="font-semibold text-white">
+                        {isConnecting ? 'Connecting...' : 'MetaMask'}
+                      </div>
                       <div className="text-xs text-gray-400">Connect using MetaMask wallet</div>
                     </div>
                     <div className="text-gray-400">→</div>
