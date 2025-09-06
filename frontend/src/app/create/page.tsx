@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { CheckCircle, AlertCircle, ArrowLeft, Copy } from 'lucide-react';
 import api from '@/config/api';
 import Link from 'next/link';
+import OfferForm from '../../components/offer-form';
 
 const { abi, bytecode } = contractArtifact;
 
@@ -299,6 +300,98 @@ export default function Create() {
                         >
                             Go to Home
                         </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Check if user is corporate (has profilePhoto, name, and email)
+    const isCorporateUser = user && user.profilePhoto && user.name && user.email;
+
+    // Corporate users see purchase form instead of create form
+    if (isCorporateUser) {
+        return (
+            <div className="min-h-screen bg-gray-900 text-white">
+                <div className="container mx-auto px-4 py-12">
+                    <div className="max-w-4xl mx-auto">
+                        {/* Header */}
+                        <div className="mb-8">
+                            <Link 
+                                href="/"
+                                className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-6"
+                            >
+                                <ArrowLeft className="w-4 h-4" />
+                                Back to home
+                            </Link>
+                            <h1 className="text-4xl font-bold mb-4">Submit Offers</h1>
+                            <p className="text-gray-400 text-lg">
+                                As a corporate user, you can submit competitive offers for bulk purchase campaigns.
+                            </p>
+                        </div>
+
+                        {/* Offer Form Demo */}
+                        <div className="grid lg:grid-cols-2 gap-8">
+                            <div>
+                                <h2 className="text-2xl font-bold mb-4">Demo: Submit an Offer</h2>
+                                <p className="text-gray-400 mb-6">
+                                    This is a demo form showing how you can submit offers for campaigns. 
+                                    Browse actual campaigns from the homepage or campaigns page.
+                                </p>
+                                <OfferForm 
+                                    contractAddress="0xA347024cE6f489273351E0fA65d4138FfaeCB39f" 
+                                    onOfferSuccess={() => {
+                                        console.log('Offer submitted successfully!');
+                                    }}
+                                />
+                            </div>
+                            
+                            <div className="space-y-6">
+                                <div className="bg-gray-800/50 border border-gray-700 rounded-2xl p-6">
+                                    <h3 className="text-xl font-bold mb-4 text-blue-400">How It Works</h3>
+                                    <div className="space-y-3 text-gray-300">
+                                        <div className="flex items-start gap-3">
+                                            <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0">1</span>
+                                            <p>Browse available campaigns from the homepage</p>
+                                        </div>
+                                        <div className="flex items-start gap-3">
+                                            <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0">2</span>
+                                            <p>Submit your best competitive offer with product details</p>
+                                        </div>
+                                        <div className="flex items-start gap-3">
+                                            <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0">3</span>
+                                            <p>Campaign creator reviews all offers and selects the best one</p>
+                                        </div>
+                                        <div className="flex items-start gap-3">
+                                            <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0">4</span>
+                                            <p>If selected, fulfill the order and receive automatic payment</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-orange-900/20 border border-orange-500/30 rounded-2xl p-6">
+                                    <h3 className="text-xl font-bold mb-4 text-orange-400">Corporate Benefits</h3>
+                                    <ul className="space-y-2 text-orange-200">
+                                        <li className="flex items-center gap-2">
+                                            <CheckCircle className="w-4 h-4 text-orange-400" />
+                                            Access to high-volume bulk orders
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <CheckCircle className="w-4 h-4 text-orange-400" />
+                                            Secure smart contract-based payments
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <CheckCircle className="w-4 h-4 text-orange-400" />
+                                            Transparent competitive offer system
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <CheckCircle className="w-4 h-4 text-orange-400" />
+                                            Automated payment upon delivery
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

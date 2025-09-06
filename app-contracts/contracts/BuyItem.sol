@@ -49,25 +49,42 @@ contract BuyItem {
         deposits[msg.sender] += msg.value;
     }
 
-    function submitOffer(uint256 _price, string memory _productName, string memory _productLink) external {
+    function submitOffer(uint256 _price, string memory _productName, string memory _productLink) external payable {
+        require(msg.value == price, "Must send exact campaign price to submit offer");
+        require(participants.length < maxParticipantCount, "Maximum participant limit reached");
+        require(!isFinalized, "Offer submission period has ended");
+        require(block.timestamp <= endDate, "Campaign has expired");
+
+        // Add offer to offers array
         offers.push(Offer({
             price: _price,
             productName: _productName,
             productLink: _productLink,
             walletAddress: msg.sender
         }));
-    }
 
-    function purchase() external payable {
-        require(msg.value == price, "Sent ETH must equal price");
-        require(participants.length < maxParticipantCount, "Maximum participant limit reached");
-        require(!isFinalized, "Purchase period has ended");
-
+        // Add sender as participant if not already participated
         if (!hasParticipated[msg.sender]) {
             hasParticipated[msg.sender] = true;
             participants.push(msg.sender);
         }
 
+        // Record deposit
+        deposits[msg.sender] += msg.value;
+    }
+
+    function purchase() external payable {
+        require(msg.value == price, "Must send exact campaign price");
+        require(participants.length < maxParticipantCount, "Maximum participant limit reached");
+        require(!isFinalized, "Campaign has ended");
+        require(block.timestamp <= endDate, "Campaign has expired");
+        require(!hasParticipated[msg.sender], "You have already participated");
+
+        // Add sender as participant
+        hasParticipated[msg.sender] = true;
+        participants.push(msg.sender);
+
+        // Record deposit
         deposits[msg.sender] += msg.value;
     }
 

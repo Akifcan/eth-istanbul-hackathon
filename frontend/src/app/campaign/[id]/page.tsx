@@ -6,6 +6,8 @@ import contractArtifact from "@/contract/BuyItem/BuyItem.json";
 import useUserStore from '../../../store/user';
 import { ArrowLeft, Users, Clock, DollarSign, Package, CheckCircle, AlertCircle, Loader, Copy } from 'lucide-react';
 import Link from 'next/link';
+import OfferForm from '../../../components/offer-form';
+import JoinCampaignSidebar from '@/components/join-campaign-sidebar';
 
 declare global {
     interface Window {
@@ -34,28 +36,13 @@ interface PurchaseFormData {
 
 export default function CampaignDetail() {
     const params = useParams();
-    const router = useRouter();
     const { user } = useUserStore();
     const campaignId = params.id as string;
 
     const [contractInfo, setContractInfo] = useState<ContractInfo | null>(null);
     const [loading, setLoading] = useState(true);
-    const [purchasing, setPurchasing] = useState(false);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    
-    const [formData, setFormData] = useState<PurchaseFormData>({
-        fullName: '',
-        userAddress: '',
-        phoneNumber: ''
-    });
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
 
     const copyToClipboard = async (text: string) => {
         try {
@@ -102,58 +89,6 @@ export default function CampaignDetail() {
         }
     };
 
-    const handlePurchase = async () => {
-        if (!user) {
-            router.push('/login');
-            return;
-        }
-
-        try {
-            if (!window.ethereum) {
-                setError("MetaMask is required!");
-                return;
-            }
-
-            const { fullName, userAddress, phoneNumber } = formData;
-            if (!fullName || !userAddress || !phoneNumber) {
-                setError("Please fill in all fields!");
-                return;
-            }
-
-            setPurchasing(true);
-            setError('');
-
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            const signer = await provider.getSigner();
-            const contract = new ethers.Contract(campaignId, abi, signer);
-
-            console.log('Making purchase...');
-            
-            const price = await contract.price();
-            console.log('Price:', ethers.formatEther(price), 'ETH');
-            
-            const tx = await contract.purchase(fullName, userAddress, phoneNumber, { value: price });
-            console.log('Transaction sent:', tx.hash);
-            
-            const receipt = await tx.wait();
-            console.log('Transaction confirmed:', receipt);
-            
-            setSuccessMessage('Purchase successful! Welcome to the bulk buy group.');
-            setFormData({ fullName: '', userAddress: '', phoneNumber: '' });
-            
-            // Refresh contract info
-            setTimeout(() => {
-                getParticipantInfo();
-                setSuccessMessage('');
-            }, 3000);
-
-        } catch (error: any) {
-            console.error('Error making purchase:', error);
-            setError(error.message || 'Purchase failed. Please try again.');
-        } finally {
-            setPurchasing(false);
-        }
-    };
 
     useEffect(() => {
         if (campaignId) {
@@ -196,6 +131,9 @@ export default function CampaignDetail() {
     const endDate = new Date(parseInt(contractInfo.contractEndDate) * 1000);
     const isExpired = endDate < new Date();
     const participantProgress = (Number(contractInfo.currentParticipants) / Number(contractInfo.maxParticipants)) * 100;
+    
+    // Check if user is corporate (has profilePhoto, name, and email)
+    const isCorporateUser = user && user.profilePhoto && user.name && user.email;
 
     return (
         <div className="min-h-screen bg-gray-900 text-white">
@@ -337,126 +275,38 @@ export default function CampaignDetail() {
                             )}
                         </div>
 
-                        {/* Join Form */}
-                        <div className="lg:col-span-1">
-                            {!contractInfo.isFinalized && !isExpired && (
-                                <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 sticky top-6">
-                                    <h3 className="text-xl font-semibold mb-4">Join this Campaign</h3>
-                                    
-                                    {error && (
-                                        <div className="mb-4 bg-red-900/20 border border-red-500/30 rounded-lg p-3 flex items-start gap-3">
-                                            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                                            <p className="text-red-300 text-sm">{error}</p>
-                                        </div>
-                                    )}
+                        {/* Join Campaign Sidebar - Only for Regular Users */}
+                        {!isCorporateUser && (
+                            <JoinCampaignSidebar 
+                                contractAddress={campaignId}
+                                contractInfo={{
+                                    priceETH: contractInfo.priceETH,
+                                    isFinalized: contractInfo.isFinalized
+                                }}
+                                isExpired={isExpired}
+                                onJoinSuccess={() => {
+                                    getParticipantInfo(); // Refresh campaign info
+                                }}
+                            />
+                        )}
 
-                                    {successMessage && (
-                                        <div className="mb-4 bg-green-900/20 border border-green-500/30 rounded-lg p-3 flex items-start gap-3">
-                                            <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                                            <p className="text-green-300 text-sm">{successMessage}</p>
-                                        </div>
-                                    )}
-
-                                    <form onSubmit={(e) => { e.preventDefault(); handlePurchase(); }} className="space-y-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-300 mb-2">
-                                                Full Name *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="fullName"
-                                                value={formData.fullName}
-                                                onChange={handleInputChange}
-                                                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
-                                                placeholder="John Doe"
-                                                required
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-300 mb-2">
-                                                Address *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="userAddress"
-                                                value={formData.userAddress}
-                                                onChange={handleInputChange}
-                                                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
-                                                placeholder="123 Main Street"
-                                                required
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-300 mb-2">
-                                                Phone Number *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="phoneNumber"
-                                                value={formData.phoneNumber}
-                                                onChange={handleInputChange}
-                                                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
-                                                placeholder="+1 234 567 8900"
-                                                required
-                                            />
-                                        </div>
-
-                                        <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-3 text-sm">
-                                            <p className="text-blue-200">
-                                                💰 You'll pay: <strong className="text-blue-300">{contractInfo.priceETH}</strong>
-                                            </p>
-                                            <p className="text-blue-200 text-xs mt-1">
-                                                Funds are locked until campaign finalization
-                                            </p>
-                                        </div>
-
-                                        <button
-                                            type="submit"
-                                            disabled={purchasing || !user}
-                                            className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
-                                        >
-                                            {purchasing ? (
-                                                <>
-                                                    <Loader className="w-4 h-4 animate-spin" />
-                                                    Joining...
-                                                </>
-                                            ) : (
-                                                `Join Campaign (${contractInfo.priceETH})`
-                                            )}
-                                        </button>
-
-                                        {!user && (
-                                            <p className="text-center text-red-400 text-sm">
-                                                Please <Link href="/login" className="underline">connect your wallet</Link> to join
-                                            </p>
-                                        )}
-                                    </form>
-                                </div>
-                            )}
-
-                            {(contractInfo.isFinalized || isExpired) && (
-                                <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-                                    <div className="text-center">
-                                        {contractInfo.isFinalized ? (
-                                            <>
-                                                <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
-                                                <h3 className="text-xl font-semibold mb-2 text-green-400">Campaign Completed</h3>
-                                                <p className="text-gray-400">This bulk buy campaign has been finalized and payments have been processed.</p>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Clock className="w-16 h-16 text-red-400 mx-auto mb-4" />
-                                                <h3 className="text-xl font-semibold mb-2 text-red-400">Campaign Expired</h3>
-                                                <p className="text-gray-400">This bulk buy campaign period has ended. No new participants can join.</p>
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
+                        
+                    </div>
+                             {/* Show OfferForm for Corporate Users, PurchaseForm for Regular Users */}
+                    {!contractInfo.isFinalized && !isExpired && (
+                        <div className="mb-8">
+                            {isCorporateUser && (
+                                <OfferForm 
+                                    contractAddress={campaignId}
+                                    onOfferSuccess={() => {
+                                        setSuccessMessage('Offer submitted successfully!');
+                                        getParticipantInfo(); // Refresh campaign info
+                                        setTimeout(() => setSuccessMessage(''), 3000);
+                                    }}
+                                />
                             )}
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>
