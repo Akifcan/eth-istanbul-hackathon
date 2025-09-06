@@ -346,9 +346,6 @@ export default function CorporateLogin() {
                                     Remember me
                                 </label>
                             </div>
-                            <button type="button" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
-                                Forgot password?
-                            </button>
                         </div>
                     )}
 

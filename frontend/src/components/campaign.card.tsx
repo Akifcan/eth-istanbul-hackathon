@@ -35,6 +35,8 @@ export default function CampaignCard({ campaign }: {campaign: CampaignProps}) {
                 isFinalized: result[7]
             };
 
+            console.log(info.senderCompany)
+
             setContractInfo(info);
             setLoading(false);
 
