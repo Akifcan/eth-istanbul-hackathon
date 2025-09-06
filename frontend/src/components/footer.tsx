@@ -26,9 +26,6 @@ export default function Footer() {
               <Link href="/" className="block text-gray-400 hover:text-white transition-colors text-sm">
                 Home
               </Link>
-              <Link href="/categories" className="block text-gray-400 hover:text-white transition-colors text-sm">
-                Browse Categories
-              </Link>
               <Link href="/how-it-works" className="block text-gray-400 hover:text-white transition-colors text-sm">
                 How It Works
               </Link>

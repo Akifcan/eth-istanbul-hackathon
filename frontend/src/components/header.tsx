@@ -23,9 +23,6 @@ export default function Header() {
             <Link href="/" className="text-gray-300 hover:text-white transition-colors">
               Home
             </Link>
-            <Link href="/categories" className="text-gray-300 hover:text-white transition-colors">
-              Categories
-            </Link>
             <Link href="/how-it-works" className="text-gray-300 hover:text-white transition-colors">
               How It Works
             </Link>
@@ -55,9 +52,6 @@ export default function Header() {
             <div className="flex flex-col space-y-4">
               <Link href="/" className="text-gray-300 hover:text-white transition-colors">
                 Home
-              </Link>
-              <Link href="/categories" className="text-gray-300 hover:text-white transition-colors">
-                Categories
               </Link>
               <Link href="/how-it-works" className="text-gray-300 hover:text-white transition-colors">
                 How It Works
