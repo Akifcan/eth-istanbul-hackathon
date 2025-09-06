@@ -8,12 +8,6 @@ import { CheckCircle, AlertCircle, ArrowLeft, Copy } from 'lucide-react';
 import api from '@/config/api';
 import Link from 'next/link';
 
-declare global {
-    interface Window {
-        ethereum?: any;
-    }
-}
-
 const { abi, bytecode } = contractArtifact;
 
 type DeploymentState = 'idle' | 'deploying' | 'success' | 'error';
@@ -126,7 +120,10 @@ export default function Create() {
             try {
                 await api.post('/campaigns', {
                     transaction: address,
-                    createdWallet: user.address
+                    createdWallet: user.address,
+                    name: formData.creatorName,
+                    address: formData.creatorAddress,
+                    phoneNumber: formData.creatorPhone
                 });
             } catch (error) {
                 console.error('Failed to save campaign to backend:', error);
@@ -416,6 +413,7 @@ export default function Create() {
                                         Full Name
                                     </label>
                                     <input
+                                        required
                                         type="text"
                                         name="creatorName"
                                         value={formData.creatorName}
@@ -429,7 +427,8 @@ export default function Create() {
                                     <label className="block text-sm font-medium text-gray-300 mb-2">
                                         Phone Number
                                     </label>
-                                    <input
+                                    <input 
+                                        required
                                         type="text"
                                         name="creatorPhone"
                                         value={formData.creatorPhone}
@@ -445,6 +444,7 @@ export default function Create() {
                                     Address
                                 </label>
                                 <input
+                                    required
                                     type="text"
                                     name="creatorAddress"
                                     value={formData.creatorAddress}

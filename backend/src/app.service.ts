@@ -3,21 +3,27 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Campaign } from './entities/campaign.entity';
 import { CreateCampaignDto } from './dtos/create-campaign.dto';
+import { Shipping } from './dtos/shipping.entity';
 
 @Injectable()
 export class AppService {
   constructor(
     @InjectRepository(Campaign)
     private campaignRepository: Repository<Campaign>,
+    @InjectRepository(Shipping)
+    private shippingRepository: Repository<Shipping>,
   ) {}
 
-  getHello(): string {
-    return 'Hello World!';
-  }
-
   async createCampaign(createCampaignDto: CreateCampaignDto): Promise<Campaign> {
-    const campaign = this.campaignRepository.create(createCampaignDto);
-    return await this.campaignRepository.save(campaign);
+    const campaign = await this.campaignRepository.save(this.campaignRepository.create(createCampaignDto));
+    await this.shippingRepository.save(this.shippingRepository.create({
+        name: createCampaignDto.name,
+        address: createCampaignDto.address,
+        phoneNumber: createCampaignDto.phoneNumber,
+        campaignTransactionId: campaign.transaction,
+        walletAddress: campaign.createdWallet
+    }))
+    return campaign
   }
 
   async getAllCampaigns(): Promise<Campaign[]> {

@@ -7,10 +7,11 @@ import { JwtModule } from '@nestjs/jwt'
 import { DatabaseConfig, JWTConfig } from './config/config.types';
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { Campaign } from './entities/campaign.entity';
+import { Shipping } from './dtos/shipping.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Campaign]),
+    TypeOrmModule.forFeature([Campaign, Shipping]),
     ConfigModule.forRoot({
       load: [configuration],
       isGlobal: true,
