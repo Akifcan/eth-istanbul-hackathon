@@ -37,9 +37,11 @@ async function main() {
   const maxParticipantCount = 100;
   const productId = 1;
   const productSlug = "sample-product";
+  const normalPrice = ethers.parseEther("0.002"); // 0.002 ETH normal price
+  const discountedPrice = ethers.parseEther("0.001"); // 0.001 ETH discounted price
 
   // Contract'ı deploy et
-  const buyItem = await contractFactory.deploy(endDate, maxParticipantCount, productId, productSlug);
+  const buyItem = await contractFactory.deploy(endDate, maxParticipantCount, productId, productSlug, normalPrice, discountedPrice);
   await buyItem.waitForDeployment();
 
   const contractAddress = await buyItem.getAddress();

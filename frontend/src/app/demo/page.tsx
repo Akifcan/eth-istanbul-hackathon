@@ -14,9 +14,8 @@ const { abi, bytecode } = contractArtifact;
 export default function Demo() {
     const [account, setAccount] = useState<string>('');
     const [isConnecting, setIsConnecting] = useState(false);
-    const [contractAddress, setContractAddress] = useState<string>('0xc5902C07C31a659F5a5cE5CD2600060Ee8209481');
+    const [contractAddress, setContractAddress] = useState<string>('0x7DF7243B3B07393ca1236c43eAeec65440D657a6');
     const [participantInfo, setParticipantInfo] = useState<any>(null);
-    const [purchaseAmount, setPurchaseAmount] = useState<string>('');
 
     const handleDeploy = async () => {
 
@@ -38,10 +37,12 @@ export default function Demo() {
             const maxParticipantCount = 50;
             const productId = 5;
             const productSlug = "iphone-16";
+            const normalPrice = ethers.parseEther("0.002"); // 0.002 ETH normal price
+            const discountedPrice = ethers.parseEther("0.001"); // 0.001 ETH discounted price
 
             console.log("START")
 
-            const contract = await factory.deploy(endDate, maxParticipantCount, productId, productSlug);
+            const contract = await factory.deploy(endDate, maxParticipantCount, productId, productSlug, normalPrice, discountedPrice);
 
             await contract.waitForDeployment();
 
@@ -69,11 +70,13 @@ export default function Demo() {
             const result = await contract.getParticipantInfo();
             
             const info = {
-                currentParticipants: result[0].toString(),
-                maxParticipants: result[1].toString(),
+                currentParticipants: result[0],
+                maxParticipants: result[1],
                 contractEndDate: result[2].toString(),
-                contractProductId: result[3].toString(),
-                contractProductSlug: result[4]
+                contractProductId: result[3],
+                contractProductSlug: result[4],
+                normalPriceETH: result[5],
+                discountedPriceETH: result[6]
             };
 
             console.log('Participant Info:', info);
@@ -85,15 +88,10 @@ export default function Demo() {
         }
     };
 
-    const handlePurchase = async (contractAddr: string, amount: string) => {
+    const handlePurchase = async (contractAddr: string) => {
         try {
             if (!window.ethereum) {
                 alert("MetaMask gerekli!");
-                return;
-            }
-
-            if (!amount || parseFloat(amount) <= 0) {
-                alert("Geçerli bir miktar girin!");
                 return;
             }
 
@@ -101,23 +99,21 @@ export default function Demo() {
             const signer = await provider.getSigner();
             const contract = new ethers.Contract(contractAddr, abi, signer);
 
-            // Amount'u ETH'den Wei'ye çevir
-            const amountInWei = ethers.parseEther(amount);
-
-            console.log('Making purchase...', { amount, amountInWei: amountInWei.toString() });
+            console.log('Making purchase with discounted price...');
             
-            // purchase fonksiyonunu çağır (payable, amount parametresi ve value gönder)
-            const tx = await contract.purchase(amountInWei, { value: amountInWei });
+            const discountedPrice = await contract.discountedPrice();
+            
+            console.log('Discounted price:', ethers.formatEther(discountedPrice), 'ETH');
+            
+            const tx = await contract.purchase({ value: discountedPrice });
             
             console.log('Transaction sent:', tx.hash);
             alert(`Transaction sent: ${tx.hash}`);
             
-            // Transaction'ın onaylanmasını bekle
             const receipt = await tx.wait();
             console.log('Transaction confirmed:', receipt);
             alert('Purchase successful!');
-            
-            // Purchase sonrası participant info'yu güncelle
+
             await getParticipantInfo(contractAddr);
 
         } catch (error: any) {
@@ -202,18 +198,10 @@ export default function Demo() {
                                 <div className="mt-4">
                                     <h4 className="font-bold mb-2">Make Purchase:</h4>
                                     <div className="flex gap-2">
-                                        <input
-                                            type="number"
-                                            step="0.01"
-                                            placeholder="Amount in ETH (e.g., 0.1)"
-                                            value={purchaseAmount}
-                                            onChange={(e) => setPurchaseAmount(e.target.value)}
-                                            className="px-3 py-2 border rounded flex-1"
-                                        />
+                                       
                                         <button 
-                                            onClick={() => handlePurchase(contractAddress, purchaseAmount)}
+                                            onClick={() => handlePurchase(contractAddress)}
                                             className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
-                                            disabled={!purchaseAmount}
                                         >
                                             Purchase
                                         </button>
@@ -231,6 +219,8 @@ export default function Demo() {
                             <p>End Date: {new Date(parseInt(participantInfo.contractEndDate) * 1000).toLocaleString()}</p>
                             <p>Product ID: {participantInfo.contractProductId}</p>
                             <p>Product Slug: {participantInfo.contractProductSlug}</p>
+                            <p className="text-red-600">Normal Price: {participantInfo.normalPriceETH}</p>
+                            <p className="text-green-600">Discounted Price: {participantInfo.discountedPriceETH}</p>
                         </div>
                     )}
                 </div>
