@@ -1,9 +1,20 @@
 "use client"
 import { ArrowRight, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
+import api from '../../config/api';
+import FeaturedDealCard from '../featured-deal-card';
 
 export default function RegularHero() {
   const router = useRouter();
+
+  const { data: suggestedCampaign, isLoading } = useQuery({
+    queryKey: ['suggested-campaign'],
+    queryFn: async () => {
+      const response = await api.get<CampaignProps>('/suggested-campaign');
+      return response.data;
+    }
+  });
 
   return (
     <section className="relative overflow-hidden">
@@ -66,7 +77,53 @@ export default function RegularHero() {
               </div>
 
               <div className="max-w-sm">
-                {/* <ProductCard product={featuredProduct} /> */}
+                {isLoading ? (
+                  // Featured Deal Skeleton
+                  <div className="relative">
+                    <div className="bg-gray-800/50 border border-gray-700/50 rounded-3xl p-6 animate-pulse">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="h-6 bg-gray-700/50 rounded-full w-20"></div>
+                        <div className="h-4 bg-gray-700/50 rounded w-12"></div>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="h-6 bg-gray-700/50 rounded w-3/4"></div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-gray-800/50 rounded-2xl p-3">
+                            <div className="h-4 bg-gray-700/50 rounded mb-2"></div>
+                            <div className="h-4 bg-gray-700/50 rounded w-1/2"></div>
+                          </div>
+                          <div className="bg-gray-800/50 rounded-2xl p-3">
+                            <div className="h-4 bg-gray-700/50 rounded mb-2"></div>
+                            <div className="h-4 bg-gray-700/50 rounded w-1/2"></div>
+                          </div>
+                        </div>
+                        <div className="h-16 bg-gray-700/50 rounded-2xl"></div>
+                        <div className="h-2 bg-gray-700/50 rounded-full"></div>
+                        <div className="h-10 bg-gray-700/50 rounded-2xl"></div>
+                      </div>
+                    </div>
+                  </div>
+                ) : suggestedCampaign ? (
+                  <FeaturedDealCard campaign={suggestedCampaign} />
+                ) : (
+                  // No campaign fallback
+                  <div className="relative">
+                    <div className="bg-gray-800/50 border border-gray-700/50 rounded-3xl p-6 text-center">
+                      <div className="inline-flex items-center gap-2 bg-gray-600/20 text-gray-400 px-3 py-1 rounded-full text-xs font-semibold mb-4">
+                        <Zap className="w-3 h-3" />
+                        COMING SOON
+                      </div>
+                      <h3 className="text-lg font-bold text-gray-400 mb-2">No Featured Deals Yet</h3>
+                      <p className="text-sm text-gray-500 mb-4">Be the first to create a campaign!</p>
+                      <button 
+                        onClick={() => router.push('/create')}
+                        className="bg-pink-500 hover:bg-pink-600 text-white py-2 px-4 rounded-2xl font-semibold text-sm transition-colors"
+                      >
+                        Create Campaign
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

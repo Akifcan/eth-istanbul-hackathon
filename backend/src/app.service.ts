@@ -121,4 +121,19 @@ export class AppService {
       }
     });
   }
+
+  async getSuggestedCampaign(): Promise<Campaign | null> {
+    // Get random campaign using ORDER BY RANDOM()
+   const campaign = await this.campaignRepository
+  .createQueryBuilder("campaign")
+  .orderBy("RAND()")
+  .getOne();
+    
+    // Return null if no campaigns
+    if (!campaign) {
+      return null;
+    }
+    
+    return campaign;
+  }
 }

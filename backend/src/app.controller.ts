@@ -16,6 +16,11 @@ export class AppController {
     return this.appService.createCampaign(createCampaignDto);
   }
 
+  @Get('suggested-campaign')
+  async suggestedCampaign(): Promise<Campaign | null> {
+    return this.appService.getSuggestedCampaign();
+  }
+
   @Post('register')
   async register(@Body() registerSellerDto: RegisterSellerDto): Promise<Seller> {
     return this.appService.registerSeller(registerSellerDto);
