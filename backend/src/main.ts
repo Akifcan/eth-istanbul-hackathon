@@ -10,7 +10,6 @@ async function bootstrap() {
 
 
   app.useGlobalPipes(new ValidationPipe())
-  app.setGlobalPrefix('/app')
   app.use(helmet())
   app.enableCors()
 

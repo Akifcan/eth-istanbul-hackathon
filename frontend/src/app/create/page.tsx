@@ -4,7 +4,8 @@ import { ethers } from 'ethers';
 import contractArtifact from "@/contract/BuyItem/BuyItem.json";
 import useUserStore from '../../store/user';
 import { useRouter } from 'next/navigation';
-import { CheckCircle, Loader, AlertCircle, ArrowLeft, Copy } from 'lucide-react';
+import { CheckCircle, AlertCircle, ArrowLeft, Copy } from 'lucide-react';
+import api from '@/config/api';
 import Link from 'next/link';
 
 declare global {
@@ -20,6 +21,11 @@ type DeploymentState = 'idle' | 'deploying' | 'success' | 'error';
 export default function Create() {
     const { user } = useUserStore();
     const router = useRouter();
+    
+    if (!user) {
+        router.push('/login');
+        return null;
+    }
     
     const [deploymentState, setDeploymentState] = useState<DeploymentState>('idle');
     const [transactionHash, setTransactionHash] = useState<string>('');
@@ -88,6 +94,7 @@ export default function Create() {
 
             setDeploymentState('deploying');
             setErrorMessage('');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
@@ -105,13 +112,26 @@ export default function Create() {
                 { value: price }
             );
 
-            setTransactionHash(contract.deploymentTransaction()?.hash || '');
+            const txHash = contract.deploymentTransaction()?.hash || '';
+            setTransactionHash(txHash);
             
             await contract.waitForDeployment();
             
             const address = await contract.getAddress();
             setContractAddress(address);
+
+            // Send to backend API
+            try {
+                await api.post('/campaigns', {
+                    transaction: contractAddress,
+                    createdWallet: user.address
+                });
+            } catch (error) {
+                console.error('Failed to save campaign to backend:', error);
+            }
+
             setDeploymentState('success');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
             // Clear form
             setFormData({
@@ -128,6 +148,7 @@ export default function Create() {
             console.error('Deployment failed:', error);
             setErrorMessage(error.message || 'Deployment failed. Please try again.');
             setDeploymentState('error');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
 
@@ -137,6 +158,53 @@ export default function Create() {
         setContractAddress('');
         setErrorMessage('');
     };
+
+    // Deploying state - Full screen loader
+    if (deploymentState === 'deploying') {
+        return (
+            <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+                <div className="text-center space-y-8 max-w-md">
+                    <div className="relative">
+                        <div className="w-24 h-24 mx-auto">
+                            <div className="absolute inset-0 border-4 border-blue-500/20 rounded-full"></div>
+                            <div className="absolute inset-0 border-4 border-transparent border-t-blue-500 rounded-full animate-spin"></div>
+                        </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                        <h2 className="text-3xl font-bold text-blue-400">Creating Your Contract</h2>
+                        <p className="text-gray-400 text-lg">
+                            Deploying contract to blockchain, please wait...
+                        </p>
+                        <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4">
+                            <p className="text-yellow-300 text-sm">
+                                ⚠️ This may take a few minutes. Do not close this page.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-400">Transaction Hash:</span>
+                            <span className="text-blue-400 font-mono">
+                                {transactionHash ? `${transactionHash.slice(0, 10)}...` : 'Generating...'}
+                            </span>
+                        </div>
+                        {transactionHash && (
+                            <a
+                                href={`https://sepolia.etherscan.io/tx/${transactionHash}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-400 hover:text-blue-300 text-sm underline block"
+                            >
+                                View on Etherscan
+                            </a>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     // Success state
     if (deploymentState === 'success') {
@@ -400,17 +468,9 @@ export default function Create() {
 
                         <button
                             type="submit"
-                            disabled={deploymentState === 'deploying' || !user}
-                            className="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+                            className="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg font-semibold transition-colors"
                         >
-                            {deploymentState === 'deploying' ? (
-                                <>
-                                    <Loader className="w-5 h-5 animate-spin" />
-                                    Creating Contract...
-                                </>
-                            ) : (
-                                `Create Contract ${formData.contractPrice ? `(Pay ${formData.contractPrice} ETH)` : ''}`
-                            )}
+                            {`Create Contract ${formData.contractPrice ? `(Pay ${formData.contractPrice} ETH)` : ''}`}
                         </button>
 
                         {!user && (

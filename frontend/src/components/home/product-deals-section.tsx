@@ -1,64 +1,18 @@
-import { ArrowRight } from 'lucide-react';
+"use client"
+import { ArrowRight, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
-import ProductCard from '../product-card';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import api from '@/config/api';
+import CampaignCard from '../campaign.card';
 
 export default function ProductDealsSection() {
-  const products = [
-    {
-      id: 1,
-      name: 'iPhone 15 Pro Max',
-      description: 'Latest flagship smartphone with advanced features',
-      image: '/products/iphone-15.avif',
-      currentPrice: '₺39,999',
-      originalPrice: '₺54,999',
-      discount: 27,
-      progress: 73,
-      maxParticipants: 100,
-      remaining: 27,
-      timeLeft: '2 days left',
-      rating: 4.8,
-      reviews: 124,
-      category: 'Electronics',
-      isHot: true,
-      urgency: 'ending-soon'
-    },
-    {
-      id: 2,
-      name: 'Samsung Galaxy S24 Ultra',
-      description: 'Latest flagship smartphone with S Pen and advanced camera',
-      image: '/products/samsung.jpg',
-      currentPrice: '₺32,999',
-      originalPrice: '₺42,999',
-      discount: 23,
-      progress: 61,
-      maxParticipants: 150,
-      remaining: 59,
-      timeLeft: '5 days left',
-      rating: 4.7,
-      reviews: 89,
-      category: 'Electronics',
-      isHot: false,
-      urgency: 'trending'
-    },
-    {
-      id: 3,
-      name: 'Vestel 55" 4K Smart TV',
-      description: 'Ultra HD smart television with streaming capabilities',
-      image: '/products/vestel-televizyon.jpg',
-      currentPrice: '₺8,999',
-      originalPrice: '₺12,999',
-      discount: 31,
-      progress: 56,
-      maxParticipants: 80,
-      remaining: 35,
-      timeLeft: '1 day left',
-      rating: 4.5,
-      reviews: 67,
-      category: 'Home & TV',
-      isHot: true,
-      urgency: 'almost-full'
+  const { data: campaigns, isLoading, isError } = useQuery({
+    queryKey: ['campaigns'],
+    queryFn: async () => {
+      return await api.get<CampaignProps[]>('/campaigns')
     }
-  ];
+  });
 
   return (
     <section className="py-16 relative overflow-hidden">
@@ -96,25 +50,55 @@ export default function ProductDealsSection() {
 
           {/* Products Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-1 mb-12">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {isLoading ? (
+              // Skeleton loading
+              Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="bg-gray-800/50 border border-gray-700/50 rounded-2xl p-6 animate-pulse">
+                  <div className="h-48 bg-gray-700/50 rounded-xl mb-4"></div>
+                  <div className="space-y-3">
+                    <div className="h-6 bg-gray-700/50 rounded"></div>
+                    <div className="h-4 bg-gray-700/50 rounded w-3/4"></div>
+                    <div className="flex gap-2">
+                      <div className="h-8 bg-gray-700/50 rounded w-20"></div>
+                      <div className="h-8 bg-gray-700/50 rounded w-16"></div>
+                    </div>
+                    <div className="h-2 bg-gray-700/50 rounded mb-2"></div>
+                    <div className="flex justify-between text-sm">
+                      <div className="h-4 bg-gray-700/50 rounded w-16"></div>
+                      <div className="h-4 bg-gray-700/50 rounded w-20"></div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : isError ? (
+              // Error state
+              <div className="col-span-full">
+                <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-8 text-center">
+                  <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-red-300 mb-2">Failed to load campaigns</h3>
+                  <p className="text-red-200 text-sm">
+                    Unable to connect to the server. Please check your connection and try again.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              campaigns?.data.map((campaign) => {
+                return <CampaignCard key={campaign.id} campaign={campaign} />
+              })
+            )}
           </div>
 
           {/* Bottom Stats */}
           <div className="text-center">
             <div className="inline-flex items-center gap-6 text-gray-400 text-sm">
               <div>
-                <span className="text-white font-bold">3</span> Featured deals
+                <span className="text-white font-bold">{campaigns?.data.length}</span> Featured deals
               </div>
               <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
               <div>
                 <span className="text-white font-bold">Average 27%</span> savings
               </div>
               <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
-              <div>
-                <span className="text-white font-bold">72 hours</span> avg time left
-              </div>
             </div>
             
             {/* Mobile CTA */}

@@ -6,7 +6,6 @@ import { Campaign } from './entities/campaign.entity';
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
-
   @Post('campaigns')
   async createCampaign(@Body() createCampaignDto: CreateCampaignDto): Promise<Campaign> {
     return this.appService.createCampaign(createCampaignDto);

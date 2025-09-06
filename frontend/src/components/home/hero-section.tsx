@@ -1,25 +1,11 @@
+"use client"
 import { ArrowRight, Zap } from 'lucide-react';
-import ProductCard from '../product-card';
+import { useRouter } from 'next/navigation';
+
 
 export default function HeroSection() {
-  const featuredProduct = {
-    id: 1,
-    name: 'iPhone 15 Pro Max',
-    description: 'Latest flagship smartphone with advanced features',
-    image: '/products/iphone-15.avif',
-    currentPrice: '₺39,999',
-    originalPrice: '₺54,999',
-    discount: 27,
-    progress: 73,
-    maxParticipants: 100,
-    remaining: 27,
-    timeLeft: '2 days left',
-    rating: 4.8,
-    reviews: 124,
-    category: 'Electronics',
-    isHot: true,
-    urgency: 'ending-soon' as const
-  };
+
+  const router = useRouter()
 
   return (
     <section className="relative overflow-hidden">
@@ -40,11 +26,11 @@ export default function HeroSection() {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="group bg-pink-500 hover:bg-pink-600 text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-3">
+                <button onClick={() => router.push('/create')} className="group bg-pink-500 hover:bg-pink-600 text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-3">
                   Start Buying Together
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
-                <button className="border border-gray-700 hover:border-gray-600 text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300">
+                <button onClick={() => router.push('/how-it-works')} className="border border-gray-700 hover:border-gray-600 text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300">
                   How It Works
                 </button>
               </div>
@@ -76,7 +62,7 @@ export default function HeroSection() {
               </div>
 
               <div className="max-w-sm">
-                <ProductCard product={featuredProduct} />
+                {/* <ProductCard product={featuredProduct} /> */}
               </div>
             </div>
           </div>

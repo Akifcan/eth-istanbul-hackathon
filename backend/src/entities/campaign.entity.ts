@@ -8,9 +8,9 @@ export class Campaign {
     @Column({unique: true})
     transaction: string
 
-    @Column()
+    @Column({name: 'created_wallet'})
     createdWallet: string
 
-    @CreateDateColumn()
+    @CreateDateColumn({name: 'created_at'})
     createdAt: Date
 }

@@ -78,7 +78,14 @@ export default function Header() {
                         <p className="text-white text-sm font-medium">{user.name}</p>
                         <p className="text-gray-400 text-xs font-mono">{user.address.slice(0, 6)}...</p>
                       </div>
-                      <div className="p-2">
+                      <div className="p-2 space-y-1">
+                        <Link
+                          href="/profile"
+                          className="w-full flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md text-sm transition-colors"
+                        >
+                          <User className="w-4 h-4" />
+                          Profile
+                        </Link>
                         <button
                           onClick={logout}
                           className="w-full flex items-center gap-2 px-3 py-2 text-red-400 hover:bg-gray-700 rounded-md text-sm transition-colors"
