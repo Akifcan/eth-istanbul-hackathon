@@ -76,12 +76,14 @@ export default function Create() {
                 return;
             }
 
-            const { contractTitle, contractDescription, maxParticipantCount, contractPrice, creatorName, creatorAddress, creatorPhone } = formData;
+            const { contractTitle, contractDescription, maxParticipantCount, contractPrice } = formData;
 
-            if (!contractTitle || !contractDescription || !maxParticipantCount || !contractPrice || !creatorName || !creatorAddress || !creatorPhone) {
-                alert("Please fill in all fields!");
+            if (!contractTitle || !contractDescription || !maxParticipantCount || !contractPrice) {
+                alert("Please fill in all contract fields!");
                 return;
             }
+
+            // Address fields are still collected for UI purposes but not required for contract
 
             const participantCount = parseInt(maxParticipantCount);
             if (isNaN(participantCount) || participantCount < 2) {
@@ -109,9 +111,6 @@ export default function Create() {
                 price, 
                 contractTitle,
                 contractDescription,
-                creatorName, 
-                creatorAddress, 
-                creatorPhone,
                 { value: price }
             );
 
@@ -410,11 +409,11 @@ export default function Create() {
                         </div>
 
                         <div className="border-t border-gray-700 pt-6">
-                            <h3 className="text-lg font-semibold mb-4">Creator Information</h3>
+                            <h3 className="text-lg font-semibold mb-4">Creator Information <span className="text-sm font-normal text-gray-500">(Optional)</span></h3>
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                                        Full Name *
+                                        Full Name
                                     </label>
                                     <input
                                         type="text"
@@ -423,13 +422,12 @@ export default function Create() {
                                         onChange={handleInputChange}
                                         className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                                         placeholder="John Doe"
-                                        required
                                     />
                                 </div>
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                                        Phone Number *
+                                        Phone Number
                                     </label>
                                     <input
                                         type="text"
@@ -438,14 +436,13 @@ export default function Create() {
                                         onChange={handleInputChange}
                                         className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                                         placeholder="+1 234 567 8900"
-                                        required
                                     />
                                 </div>
                             </div>
 
                             <div className="mt-6">
                                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                                    Address *
+                                    Address
                                 </label>
                                 <input
                                     type="text"
@@ -454,7 +451,6 @@ export default function Create() {
                                     onChange={handleInputChange}
                                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                                     placeholder="123 Main Street, City, Country"
-                                    required
                                 />
                             </div>
                         </div>

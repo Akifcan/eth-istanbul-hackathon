@@ -2,13 +2,6 @@
 pragma solidity ^0.8.20;
 
 contract BuyItem {
-    struct PurchaseInfo {
-        uint256 amount;
-        uint256 timestamp;
-        string fullName;
-        string userAddress;
-        string phoneNumber;
-    }
 
     struct Offer {
         uint256 price;
@@ -31,11 +24,10 @@ contract BuyItem {
     Offer[] public offers;
     address[] public participants;
 
-    mapping(address => PurchaseInfo[]) public purchases;
     mapping(address => uint256) public deposits;
     mapping(address => bool) public hasParticipated;
 
-    constructor(uint256 _maxParticipantCount, uint256 _price, string memory _title, string memory _description, string memory _creatorName, string memory _creatorAddress, string memory _creatorPhone) payable {
+    constructor(uint256 _maxParticipantCount, uint256 _price, string memory _title, string memory _description) payable {
         require(_maxParticipantCount > 0, "Max participant count must be greater than 0");
         require(_price > 0, "Price must be greater than 0");
         require(msg.value == _price, "Must send exact price amount");
@@ -54,15 +46,6 @@ contract BuyItem {
         hasParticipated[msg.sender] = true;
         participants.push(msg.sender);
         
-        // Add creator's purchase info
-        purchases[msg.sender].push(PurchaseInfo({
-            amount: price,
-            timestamp: block.timestamp,
-            fullName: _creatorName,
-            userAddress: _creatorAddress,
-            phoneNumber: _creatorPhone
-        }));
-        
         deposits[msg.sender] += msg.value;
     }
 
@@ -75,7 +58,7 @@ contract BuyItem {
         }));
     }
 
-    function purchase(string memory _fullName, string memory _userAddress, string memory _phoneNumber) external payable {
+    function purchase() external payable {
         require(msg.value == price, "Sent ETH must equal price");
         require(participants.length < maxParticipantCount, "Maximum participant limit reached");
         require(!isFinalized, "Purchase period has ended");
@@ -84,14 +67,6 @@ contract BuyItem {
             hasParticipated[msg.sender] = true;
             participants.push(msg.sender);
         }
-
-        purchases[msg.sender].push(PurchaseInfo({
-            amount: price,
-            timestamp: block.timestamp,
-            fullName: _fullName,
-            userAddress: _userAddress,
-            phoneNumber: _phoneNumber
-        }));
 
         deposits[msg.sender] += msg.value;
     }
@@ -151,30 +126,6 @@ contract BuyItem {
         return offers.length;
     }
 
-    function getAllPurchases() external view returns (PurchaseInfo[] memory) {
-        // Calculate total number of purchases
-        uint256 totalPurchases = 0;
-        for (uint256 i = 0; i < participants.length; i++) {
-            totalPurchases += purchases[participants[i]].length;
-        }
-
-        // Create array to hold all purchases
-        PurchaseInfo[] memory allPurchases = new PurchaseInfo[](totalPurchases);
-        uint256 index = 0;
-
-        // Collect all purchases from all participants
-        for (uint256 i = 0; i < participants.length; i++) {
-            address participant = participants[i];
-            PurchaseInfo[] memory participantPurchases = purchases[participant];
-            
-            for (uint256 j = 0; j < participantPurchases.length; j++) {
-                allPurchases[index] = participantPurchases[j];
-                index++;
-            }
-        }
-
-        return allPurchases;
-    }
 
 
     function getParticipantInfo() external view returns (uint256 currentParticipants, uint256 maxParticipants, uint256 contractEndDate, string memory priceETH, string memory contractTitle, string memory contractDescription, address contractSenderCompany, bool contractIsFinalized) {
@@ -241,8 +192,6 @@ contract BuyItem {
             }
         }
         
-        // Clear all purchases for this participant
-        delete purchases[msg.sender];
         
         // Clear deposits
         deposits[msg.sender] = 0;
