@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+/* Font families */
+:root {
+  --font-geist-sans: 'Geist', sans-serif;
+  --font-geist-mono: 'Geist Mono', monospace;
+  --font-noto-color-emoji: 'Noto Color Emoji', emoji;
+}
+
+/* Apply emoji font to emoji characters */
+body {
+  font-family: var(--font-geist-sans), var(--font-noto-color-emoji), system-ui, -apple-system, sans-serif;
+}
+
+/* Ensure emojis use the correct font */
+.emoji, 
+*:is([data-emoji], [emoji]) {
+  font-family: var(--font-noto-color-emoji), "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+}
