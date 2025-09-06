@@ -189,6 +189,10 @@ contract BuyItem {
         }
     }
 
+    function isParticipant(address _address) external view returns (bool) {
+        return hasParticipated[_address];
+    }
+
     function withdraw() external {
         require(block.timestamp <= endDate, "Withdrawals are closed after endDate");
         require(!isFinalized, "Cannot withdraw after finalization");
