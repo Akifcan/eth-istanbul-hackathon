@@ -34,9 +34,12 @@ async function main() {
   );
 
   const endDate = Math.floor(Date.now() / 1000) + 24 * 60 * 60;
+  const maxParticipantCount = 100;
+  const productId = 1;
+  const productSlug = "sample-product";
 
   // Contract'ı deploy et
-  const buyItem = await contractFactory.deploy(endDate);
+  const buyItem = await contractFactory.deploy(endDate, maxParticipantCount, productId, productSlug);
   await buyItem.waitForDeployment();
 
   const contractAddress = await buyItem.getAddress();
