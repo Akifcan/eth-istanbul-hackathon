@@ -37,7 +37,7 @@ export default function CorporateHero({ user }: CorporateHeroProps) {
                   <img 
                     src={user.profilePhoto} 
                     alt={user.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                     onError={(e) => {
                       e.currentTarget.src = 'https://via.placeholder.com/80/4F46E5/FFFFFF?text=' + user.name?.charAt(0);
                     }}

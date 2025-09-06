@@ -296,7 +296,7 @@ export default function CorporateLogin() {
                                             <img 
                                                 src={formData.profilePhoto} 
                                                 alt="Profile preview"
-                                                className="object-contain w-12 h-12 rounded-full object-cover border border-gray-600"
+                                                className="object-contain w-12 h-12 rounded-full object-contain border border-gray-600"
                                                 onError={(e) => {
                                                     e.currentTarget.style.display = 'none';
                                                 }}

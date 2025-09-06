@@ -58,7 +58,7 @@ export default function Header() {
                   // Corporate User - Offers Button & Logout
                   <>
                     <Link 
-                      href="/offers" 
+                      href="/my-offers" 
                       className="hidden md:flex items-center gap-2 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-300"
                     >
                       <Tag className="w-4 h-4" />
@@ -157,7 +157,7 @@ export default function Header() {
                 <>
                   {isCorporateUser ? (
                     // Corporate User - Offers Button
-                    <Link href="/offers" className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 px-6 py-3 rounded-2xl text-sm font-semibold transition-colors duration-300 w-fit">
+                    <Link href="/my-offers" className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 px-6 py-3 rounded-2xl text-sm font-semibold transition-colors duration-300 w-fit">
                       <Tag className="w-4 h-4" />
                       Offers
                     </Link>
