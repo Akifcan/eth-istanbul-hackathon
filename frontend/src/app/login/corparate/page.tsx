@@ -1,10 +1,14 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import api from '@/config/api';
+import useUserStore from '../../../store/user';
 
 export default function CorporateLogin() {
     const [isLogin, setIsLogin] = useState(true);
+    const router = useRouter();
+    const { setUser } = useUserStore();
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -62,9 +66,39 @@ export default function CorporateLogin() {
 
         try {
             if (isLogin) {
-                // Login logic (placeholder for now)
-                console.log('Login attempt:', formData);
-                // TODO: Implement login API call
+                // Login logic
+                if (!formData.email || !formData.password) {
+                    setError('Please enter email and password');
+                    setIsLoading(false);
+                    return;
+                }
+
+                // Call login API
+                const response = await api.post('/login', {
+                    email: formData.email,
+                    password: formData.password
+                });
+
+                if (response.status === 200 || response.status === 201) {
+                    const sellerData = response.data;
+                    
+                    // Update user store with seller information
+                    setUser({
+                        address: sellerData.wallet,
+                        profilePhoto: sellerData.photoUrl,
+                        name: sellerData.email.split('@')[0], // Use email prefix as name
+                        email: sellerData.email
+                    });
+
+                    setSuccess('Login successful! Redirecting to homepage...');
+                    
+                    // Redirect to homepage after 1 second
+                    setTimeout(() => {
+                        router.push('/');
+                    }, 1000);
+                } else {
+                    setError('Login failed. Please try again.');
+                }
             } else {
                 // Registration logic
                 if (formData.password !== formData.confirmPassword) {
@@ -106,12 +140,24 @@ export default function CorporateLogin() {
             }
         } catch (error: any) {
             console.error('Error:', error);
-            if (error.response?.data?.message) {
-                setError(error.response.data.message);
-            } else if (error.response?.status === 409) {
-                setError('Email or wallet address already exists');
+            if (isLogin) {
+                // Login error handling
+                if (error.response?.status === 401) {
+                    setError('Invalid email or password');
+                } else if (error.response?.data?.message) {
+                    setError(error.response.data.message);
+                } else {
+                    setError('Login failed. Please try again.');
+                }
             } else {
-                setError('An error occurred. Please try again.');
+                // Registration error handling
+                if (error.response?.data?.message) {
+                    setError(error.response.data.message);
+                } else if (error.response?.status === 409) {
+                    setError('Email or wallet address already exists');
+                } else {
+                    setError('Registration failed. Please try again.');
+                }
             }
         } finally {
             setIsLoading(false);

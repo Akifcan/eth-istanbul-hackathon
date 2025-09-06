@@ -59,7 +59,7 @@ export default function Header() {
                       <img 
                         src={user.profilePhoto} 
                         alt="Profile"
-                        className="w-8 h-8 rounded-full object-cover"
+                        className="w-8 h-8 rounded-full object-fit"
                       />
                     ) : (
                       <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center">

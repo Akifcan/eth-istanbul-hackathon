@@ -1,11 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Campaign } from './entities/campaign.entity';
 import { CreateCampaignDto } from './dtos/create-campaign.dto';
 import { RegisterSellerDto } from './dtos/register-seller.dto';
+import { LoginSellerDto } from './dtos/login-seller.dto';
 import { Shipping } from './dtos/shipping.entity';
 import { Seller } from './entities/seller.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AppService {
@@ -43,5 +45,29 @@ export class AppService {
   async registerSeller(registerSellerDto: RegisterSellerDto): Promise<Seller> {
     const seller = this.sellerRepository.create(registerSellerDto);
     return await this.sellerRepository.save(seller);
+  }
+
+  async loginSeller(loginSellerDto: LoginSellerDto): Promise<Seller> {
+    const { email, password } = loginSellerDto;
+    
+    // Find seller by email
+    const seller = await this.sellerRepository.findOne({
+      where: { email }
+    });
+
+    if (!seller) {
+      throw new UnauthorizedException('Invalid email or password');
+    }
+
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, seller.password);
+    
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid email or password');
+    }
+
+    // Return seller without password
+    const { password: _, ...sellerWithoutPassword } = seller;
+    return sellerWithoutPassword as Seller;
   }
 }
