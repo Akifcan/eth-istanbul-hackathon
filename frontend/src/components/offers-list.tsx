@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import contractArtifact from "@/contract/BuyItem/BuyItem.json";
-import { Package, ExternalLink, Wallet, DollarSign, Loader, AlertCircle } from 'lucide-react';
+import { Package, ExternalLink, Wallet, DollarSign, Loader, AlertCircle, Clock, Trophy } from 'lucide-react';
 
 const { abi } = contractArtifact;
 
@@ -16,12 +16,40 @@ interface Offer {
 interface OffersListProps {
   contractAddress: string;
   refreshTrigger?: number;
+  campaignEndTime?: string; // Campaign end time for timer
 }
 
-export default function OffersList({ contractAddress, refreshTrigger }: OffersListProps) {
+export default function OffersList({ contractAddress, refreshTrigger, campaignEndTime }: OffersListProps) {
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [timeLeft, setTimeLeft] = useState<string>('');
+  const [isUrgent, setIsUrgent] = useState(false);
+
+  // Timer function - Calculate difference between campaign end time and now
+  const updateTimer = () => {
+    if (!campaignEndTime) {
+      setTimeLeft('00d 00h 00m 00s');
+      return;
+    }
+    // Parse Unix timestamp (seconds since epoch)
+    const endTime = parseInt(campaignEndTime) * 1000; // Convert to milliseconds
+    const now = new Date().getTime();
+    const difference = endTime - now;
+
+    if (difference > 0) {
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+      setIsUrgent(hours === 0 && minutes < 60);
+      setTimeLeft(`${days.toString().padStart(2, '0')}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`);
+    } else {
+      setTimeLeft('00d 00h 00m 00s');
+      setIsUrgent(true);
+    }
+  };
 
   const getOffers = async () => {
     try {
@@ -33,7 +61,7 @@ export default function OffersList({ contractAddress, refreshTrigger }: OffersLi
       const provider = new ethers.BrowserProvider(window.ethereum);
       const contract = new ethers.Contract(contractAddress, abi, provider);
 
-      console.log('Getting offers...');
+     
       const result = await contract.getOffers();
       
       // Sort offers by price (lowest first)
@@ -42,7 +70,6 @@ export default function OffersList({ contractAddress, refreshTrigger }: OffersLi
       });
       
       setOffers(sortedOffers);
-      console.log('Offers:', sortedOffers);
       
     } catch (error) {
       console.error('Error getting offers:', error);
@@ -57,6 +84,13 @@ export default function OffersList({ contractAddress, refreshTrigger }: OffersLi
       getOffers();
     }
   }, [contractAddress, refreshTrigger]);
+
+  // Timer effect - Always run timer
+  useEffect(() => {
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [campaignEndTime]);
 
   if (loading) {
     return (
@@ -105,11 +139,80 @@ export default function OffersList({ contractAddress, refreshTrigger }: OffersLi
   }
 
   return (
-    <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-      <div className="flex items-center gap-3 mb-6">
-        <Package className="w-6 h-6 text-blue-400" />
-        <h3 className="text-xl font-semibold">Submitted Offers ({offers.length})</h3>
-      </div>
+    <div className="space-y-6">
+      {/* Best Offer Card */}
+      {offers.length > 0 && (
+        <div className="bg-gradient-to-r from-green-900/20 to-blue-900/20 rounded-lg p-6 border border-green-500/30">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <Trophy className="w-6 h-6 text-yellow-400" />
+              <h3 className="text-xl font-semibold text-white">Best Offer</h3>
+            </div>
+            <div className={`flex items-center gap-3 px-4 py-3 rounded-lg border transition-all duration-300 ${
+              isUrgent 
+                ? 'bg-red-900/30 border-red-500/30' 
+                : 'bg-orange-900/30 border-orange-500/30'
+            }`}>
+              <Clock className={`w-6 h-6 animate-pulse ${
+                isUrgent ? 'text-red-400' : 'text-orange-400'
+              }`} />
+              <div className="text-center">
+                <div className={`text-sm font-medium ${
+                  isUrgent ? 'text-red-300' : 'text-orange-300'
+                }`}>
+                  {timeLeft === '00d 00h 00m 00s' ? 'Campaign Ended' : 'Time Remaining'}
+                </div>
+                <div className={`text-2xl font-bold font-mono tracking-wider ${
+                  isUrgent ? 'text-red-400' : 'text-orange-400'
+                }`}>
+                  {timeLeft || '00d 00h 00m 00s'}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <p className="text-sm text-gray-400 mb-1">Company</p>
+              <div className="flex items-center gap-2">
+                <Wallet className="w-4 h-4 text-gray-400" />
+                <code className="text-sm bg-gray-700 px-2 py-1 rounded font-mono">
+                  {offers[0].walletAddress.slice(0, 6)}...{offers[0].walletAddress.slice(-4)}
+                </code>
+              </div>
+            </div>
+            
+            <div>
+              <p className="text-sm text-gray-400 mb-1">Product</p>
+              <p className="font-medium text-white">{offers[0].productName}</p>
+            </div>
+            
+            <div>
+              <p className="text-sm text-gray-400 mb-1">Price</p>
+              <div className="flex items-center gap-2">
+                <DollarSign className="w-4 h-4 text-green-400" />
+                <span className="text-2xl font-bold text-green-400">
+                  {ethers.formatEther(offers[0].price)} ETH
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-4 p-3 bg-blue-900/20 rounded-lg border border-blue-500/30">
+            <p className="text-sm text-blue-300">
+              <strong>Note:</strong> If no lower offer is received within the remaining time, 
+              you will purchase at this price. This is the best deal currently available!
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Offers List */}
+      <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <div className="flex items-center gap-3 mb-6">
+          <Package className="w-6 h-6 text-blue-400" />
+          <h3 className="text-xl font-semibold">Submitted Offers ({offers.length})</h3>
+        </div>
       
       <div className="overflow-x-auto">
         <table className="w-full">
@@ -160,8 +263,9 @@ export default function OffersList({ contractAddress, refreshTrigger }: OffersLi
         </table>
       </div>
       
-      <div className="mt-4 text-sm text-gray-400">
-        * Offers are sorted by price (lowest first). Campaign creator will select the best offer.
+        <div className="mt-4 text-sm text-gray-400">
+          * Offers are sorted by price (lowest first). Campaign creator will select the best offer.
+        </div>
       </div>
     </div>
   );

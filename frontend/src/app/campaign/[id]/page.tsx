@@ -85,7 +85,6 @@ export default function CampaignDetail() {
             const provider = new ethers.BrowserProvider(window.ethereum);
             const contract = new ethers.Contract(campaignId, abi, provider);
 
-            console.log('Calling getParticipantInfo...');
             const result = await contract.getParticipantInfo();
             
             const info: ContractInfo = {
@@ -99,7 +98,6 @@ export default function CampaignDetail() {
                 isFinalized: result[7]
             };
 
-            console.log('Campaign Info:', info);
             setContractInfo(info);
             setLoading(false);
 
@@ -285,7 +283,7 @@ export default function CampaignDetail() {
 
                                             {/* Offers List */}
                     <div className="mb-8" style={{gridColumn: '1/-1'}}>
-                        <OffersList contractAddress={campaignId} refreshTrigger={offersRefreshTrigger} />
+                        <OffersList contractAddress={campaignId} campaignEndTime={contractInfo.contractEndDate} refreshTrigger={offersRefreshTrigger} />
                     </div>
 
                             </div>
