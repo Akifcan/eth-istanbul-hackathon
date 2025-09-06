@@ -6,9 +6,11 @@ import configuration from './config/configuration';
 import { JwtModule } from '@nestjs/jwt'
 import { DatabaseConfig, JWTConfig } from './config/config.types';
 import { TypeOrmModule } from '@nestjs/typeorm'
+import { Campaign } from './entities/campaign.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([Campaign]),
     ConfigModule.forRoot({
       load: [configuration],
       isGlobal: true,
