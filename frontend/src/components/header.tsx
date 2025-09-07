@@ -26,7 +26,7 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <span className="text-2xl font-bold text-white">
+            <span className="text-2xl font-bold text-pink-600">
               Sway
             </span>
           </Link>
