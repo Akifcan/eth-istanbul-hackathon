@@ -8,6 +8,7 @@ contract BuyItem {
         string productName;
         string productLink;
         address walletAddress;
+        string companyId;
     }
 
     uint256 public endDate;
@@ -48,8 +49,7 @@ contract BuyItem {
         
         deposits[msg.sender] += msg.value;
     }
-
-    function submitOffer(uint256 _price, string memory _productName, string memory _productLink) external payable {
+    function submitOffer(uint256 _price, string memory _productName, string memory _productLink, string memory _companyId) external payable {
         require(participants.length < maxParticipantCount, "Maximum participant limit reached");
         require(!isFinalized, "Offer submission period has ended");
         require(block.timestamp <= endDate, "Campaign has expired");
@@ -59,7 +59,8 @@ contract BuyItem {
             price: _price,
             productName: _productName,
             productLink: _productLink,
-            walletAddress: msg.sender
+            walletAddress: msg.sender,
+            companyId: _companyId
         }));
 
         // Add sender as participant if not already participated
