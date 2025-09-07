@@ -56,7 +56,7 @@ export default function CorporateHero({ user }: CorporateHeroProps) {
                   <div className="text-xs text-gray-400">Active Campaigns</div>
                 </div>
                 <div className="bg-gray-800/50 rounded-2xl p-4 text-center">
-                  <div className="text-2xl font-bold text-green-400">₺15.2K</div>
+                  <div className="text-2xl font-bold text-green-400">$15.2K</div>
                   <div className="text-xs text-gray-400">Total Saved</div>
                 </div>
               </div>
@@ -103,7 +103,7 @@ export default function CorporateHero({ user }: CorporateHeroProps) {
               <div className="text-sm text-gray-400">Completed Deals</div>
             </div>
             <div className="bg-gray-900/30 border border-gray-800 rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold text-blue-400">₺45K</div>
+              <div className="text-3xl font-bold text-blue-400">$45K</div>
               <div className="text-sm text-gray-400">Volume Purchased</div>
             </div>
             <div className="bg-gray-900/30 border border-gray-800 rounded-2xl p-6 text-center">

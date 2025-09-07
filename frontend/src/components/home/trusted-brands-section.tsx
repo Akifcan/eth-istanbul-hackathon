@@ -42,7 +42,7 @@ export default function TrustedBrandsSection() {
                 <div className="text-gray-400 text-sm">Active Deals</div>
               </div>
               <div>
-                <div className="text-3xl font-bold text-white">₺15M+</div>
+                <div className="text-3xl font-bold text-white">$15M+</div>
                 <div className="text-gray-400 text-sm">Total Volume</div>
               </div>
             </div>
