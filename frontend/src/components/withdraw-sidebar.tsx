@@ -127,7 +127,7 @@ export default function WithdrawSidebar({
             <span className="text-white font-semibold text-lg">You're Participating</span>
           </div>
           <p className="text-gray-400 text-sm leading-relaxed">
-            You have joined this campaign and deposited <span className="font-bold text-white">{contractInfo.priceETH}</span>
+            You have joined this campaign and deposited <span className="font-bold text-white">1000 USDT</span>
           </p>
         </div>
 
@@ -168,7 +168,7 @@ export default function WithdrawSidebar({
             </div>
             <div className="flex items-center gap-2 bg-gray-700 px-3 py-2 rounded-lg">
               <DollarSign className="w-5 h-5 text-white" />
-              <span className="font-bold text-white text-lg">{contractInfo.priceETH}</span>
+              <span className="font-bold text-white text-lg">1000 USDT</span>
             </div>
           </div>
         </div>

@@ -197,7 +197,12 @@ export default function CampaignDetail() {
 
     const endDate = new Date(parseInt(contractInfo.contractEndDate) * 1000);
     const isExpired = endDate < new Date();
-    const participantProgress = (Number(contractInfo.currentParticipants) / Number(contractInfo.maxParticipants)) * 100;
+    
+    // Mock data for specific campaign ID
+    const isMockCampaign = campaignId === '0x1c9F3adcf1bD4B4CAB533C9924b94D9e6AA43B57';
+    const displayParticipants = isMockCampaign ? 10 : Number(contractInfo.currentParticipants);
+    const displayMaxParticipants = isMockCampaign ? 10 : Number(contractInfo.maxParticipants);
+    const participantProgress = (displayParticipants / displayMaxParticipants) * 100;
 
     // Check if user is corporate (has profilePhoto, name, and email)
     const isCorporateUser = user && user.profilePhoto && user.name && user.email;
@@ -291,7 +296,7 @@ export default function CampaignDetail() {
                                         <h3 className="font-semibold text-lg text-white">Participants</h3>
                                     </div>
                                     <p className="text-3xl font-bold mb-3 text-white">
-                                        {contractInfo.currentParticipants.toString()} / {contractInfo.maxParticipants.toString()}
+                                        {displayParticipants} / {displayMaxParticipants}
                                     </p>
                                     <div className="w-full bg-gray-700 rounded-full h-3">
                                         <div
@@ -310,9 +315,10 @@ export default function CampaignDetail() {
                                         <h3 className="font-semibold text-lg text-white">Price per Item</h3>
                                     </div>
                                     <p className="text-3xl font-bold text-white">
-                                        {contractInfo.priceETH}
+                                        {/* {contractInfo.priceETH} */}
+                                        1000 USDT
                                     </p>
-                                    <p className="text-sm text-gray-400 mt-2">ETH per participant</p>
+                                    <p className="text-sm text-gray-400 mt-2">USDT per participant</p>
                                 </div>
 
                                 <div className="bg-gray-900 rounded-xl p-6">
@@ -349,7 +355,7 @@ export default function CampaignDetail() {
                                 </div>
 
                                 {/* Test Finalize Button */}
-                                <div className="mb-8" style={{ gridColumn: '1/-1' }}>
+                                {/* <div className="mb-8" style={{ gridColumn: '1/-1' }}>
                                     <TestFinalizeButton 
                                         contractAddress={campaignId} 
                                         onFinalizeSuccess={() => {
@@ -357,7 +363,7 @@ export default function CampaignDetail() {
                                             setOffersRefreshTrigger(prev => prev + 1); // Refresh offers
                                         }}
                                     />
-                                </div>
+                                </div> */}
 
                                 {/* Offers List */}
                                 <div className="mb-8" style={{ gridColumn: '1/-1' }}>

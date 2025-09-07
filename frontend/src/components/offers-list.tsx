@@ -224,7 +224,7 @@ export default function OffersList({ contractAddress, refreshTrigger, campaignEn
               <div className="flex items-center gap-2">
                 <DollarSign className="w-4 h-4 text-white" />
                 <span className="text-2xl font-bold text-white">
-                  {ethers.formatEther(offers[0].price)} ETH
+                  900 USDT
                 </span>
               </div>
             </div>
@@ -255,7 +255,7 @@ export default function OffersList({ contractAddress, refreshTrigger, campaignEn
               <th className="text-left py-3 px-4 font-medium text-white">Company</th>
               <th className="text-left py-3 px-4 font-medium text-white">Name</th>
               <th className="text-left py-3 px-4 font-medium text-white">Product</th>
-              <th className="text-left py-3 px-4 font-medium text-white">Price (ETH)</th>
+              <th className="text-left py-3 px-4 font-medium text-white">Price (USDT)</th>
               <th className="text-left py-3 px-4 font-medium text-white">Actions</th>
             </tr>
           </thead>

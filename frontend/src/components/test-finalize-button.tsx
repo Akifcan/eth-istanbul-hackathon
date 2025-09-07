@@ -73,7 +73,7 @@ export default function TestFinalizeButton({ contractAddress, onFinalizeSuccess 
             Finalizing...
           </>
         ) : (
-          'Finalize Campaign (TEST)'
+          'Finalize Campaign'
         )}
       </button>
 
