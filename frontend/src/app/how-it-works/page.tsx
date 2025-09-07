@@ -58,7 +58,7 @@ export default function HowItWorks() {
             <div className="relative pt-20 pb-16">
                 <div className="container mx-auto px-4 text-center">
                     <h1 className={`text-6xl font-bold mb-6 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                        How <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">AllyBuy</span> Works
+                        How <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Sway</span> Works
                     </h1>
                     <p className={`text-xl text-gray-400 max-w-3xl mx-auto transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                         Experience the power of collective buying through blockchain technology. 
@@ -154,7 +154,7 @@ export default function HowItWorks() {
             <div className="bg-gray-800/30 py-20">
                 <div className="container mx-auto px-4">
                     <h2 className="text-4xl font-bold text-center mb-16">
-                        Why Choose <span className="text-blue-400">AllyBuy</span>?
+                        Why Choose <span className="text-blue-400">Sway</span>?
                     </h2>
                     <div className="grid md:grid-cols-3 gap-8">
                         {[

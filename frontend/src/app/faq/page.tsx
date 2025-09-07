@@ -8,8 +8,8 @@ interface FAQItem {
 
 const faqData: FAQItem[] = [
     {
-        question: "What is AllyBuy?",
-        answer: "AllyBuy is a Web3-based platform that enables users to purchase products at lower prices through bulk buying. You can make secure and transparent transactions using blockchain technology."
+        question: "What is Sway?",
+        answer: "Sway is a Web3-based platform that enables users to purchase products at lower prices through bulk buying. You can make secure and transparent transactions using blockchain technology."
     },
     {
         question: "How does it work?",
@@ -17,7 +17,7 @@ const faqData: FAQItem[] = [
     },
     {
         question: "Can I use it without a MetaMask wallet?",
-        answer: "No, since AllyBuy is a blockchain-based platform, you need MetaMask or a compatible Web3 wallet to perform secure transactions."
+        answer: "No, since Sway is a blockchain-based platform, you need MetaMask or a compatible Web3 wallet to perform secure transactions."
     },
     {
         question: "Can I get my money back?",
@@ -64,7 +64,7 @@ export default function Faq() {
                         Frequently Asked Questions
                     </h1>
                     <p className="text-gray-400 text-center mb-12">
-                        Everything you need to know about AllyBuy
+                        Everything you need to know about Sway
                     </p>
 
                     <div className="space-y-4">

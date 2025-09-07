@@ -22,7 +22,7 @@ const notoColorEmoji = Noto_Color_Emoji({
 });
 
 export const metadata: Metadata = {
-  title: "AllyBuy - Web3 Bulk Purchase Platform",
+  title: "Sway - Web3 Bulk Purchase Platform",
   description: "Web3-based platform that enables users to purchase products in bulk at lower prices through blockchain operations and smart contracts.",
 };
 

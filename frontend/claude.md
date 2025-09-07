@@ -1,8 +1,8 @@
 # Development Guidelines
 
-## What is AllyBuy?
+## What is Sway?
 
-AllyBuy is a **web3-based platform that enables users to purchase products in bulk at lower prices.** Users can perform secure, fast, and transparent bulk purchases through blockchain-based operations and smart contract infrastructure.
+Sway is a **web3-based platform that enables users to purchase products in bulk at lower prices.** Users can perform secure, fast, and transparent bulk purchases through blockchain-based operations and smart contract infrastructure.
 
 ## Key Features
 - **Web3 & Smart Contracts:** All transactions are secure and transparent on the blockchain.

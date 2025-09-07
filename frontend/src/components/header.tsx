@@ -27,7 +27,7 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <span className="text-2xl font-bold text-white">
-              AllyBuy
+              Sway
             </span>
           </Link>
 

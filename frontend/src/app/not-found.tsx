@@ -43,7 +43,7 @@ export default function NotFound() {
                 
                 <div className="mt-12 p-6 bg-gray-800 rounded-lg border border-gray-700">
                     <h3 className="text-xl font-semibold mb-3 text-blue-400">
-                        Join the AllyBuy Community
+                        Join the Sway Community
                     </h3>
                     <p className="text-gray-400 mb-4">
                         While you're here, why not explore our Web3 marketplace for bulk purchases?
