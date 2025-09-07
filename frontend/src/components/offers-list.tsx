@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import contractArtifact from "@/contract/BuyItem/BuyItem.json";
 import { Package, ExternalLink, Wallet, DollarSign, Loader, AlertCircle, Clock, Trophy } from 'lucide-react';
+import OfferRow from './offer-row';
+import api from '@/config/api';
 
 const { abi } = contractArtifact;
 
@@ -11,6 +13,14 @@ interface Offer {
   productName: string;
   productLink: string;
   walletAddress: string;
+  companyId: string;
+}
+
+interface Seller {
+  id: number;
+  name: string;
+  photoUrl: string;
+  email: string;
 }
 
 interface OffersListProps {
@@ -25,6 +35,7 @@ export default function OffersList({ contractAddress, refreshTrigger, campaignEn
   const [error, setError] = useState('');
   const [timeLeft, setTimeLeft] = useState<string>('');
   const [isUrgent, setIsUrgent] = useState(false);
+  const [bestOfferSeller, setBestOfferSeller] = useState<Seller | null>(null);
 
   // Timer function - Calculate difference between campaign end time and now
   const updateTimer = () => {
@@ -68,8 +79,17 @@ export default function OffersList({ contractAddress, refreshTrigger, campaignEn
       const sortedOffers = [...result].sort((a: Offer, b: Offer) => {
         return Number(a.price - b.price);
       });
-      
       setOffers(sortedOffers);
+      
+      // Fetch seller info for best offer
+      if (sortedOffers.length > 0) {
+        try {
+          const response = await api.get(`/seller/${sortedOffers[0].companyId}`);
+          setBestOfferSeller(response.data);
+        } catch (error) {
+          console.error('Error fetching best offer seller:', error);
+        }
+      }
       
     } catch (error) {
       console.error('Error getting offers:', error);
@@ -174,11 +194,20 @@ export default function OffersList({ contractAddress, refreshTrigger, campaignEn
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <p className="text-sm text-gray-400 mb-1">Company</p>
-              <div className="flex items-center gap-2">
-                <Wallet className="w-4 h-4 text-gray-400" />
-                <code className="text-sm bg-gray-700 px-2 py-1 rounded font-mono">
-                  {offers[0].walletAddress.slice(0, 6)}...{offers[0].walletAddress.slice(-4)}
-                </code>
+              <div className="flex flex-col items-center gap-2">
+                {bestOfferSeller?.photoUrl && (
+                  <img 
+                    src={bestOfferSeller.photoUrl} 
+                    alt={bestOfferSeller.name}
+                    className="w-12 h-12 rounded-full object-contain"
+                  />
+                )}
+                <div className="text-center">
+                  <div className="font-medium text-white">{bestOfferSeller?.name || 'Loading...'}</div>
+                  <code className="text-xs bg-gray-700 px-2 py-1 rounded font-mono">
+                    {offers[0].walletAddress.slice(0, 6)}...{offers[0].walletAddress.slice(-4)}
+                  </code>
+                </div>
               </div>
             </div>
             
@@ -219,6 +248,7 @@ export default function OffersList({ contractAddress, refreshTrigger, campaignEn
           <thead>
             <tr className="border-b border-gray-700">
               <th className="text-left py-3 px-4 font-medium text-gray-300">Company</th>
+              <th className="text-left py-3 px-4 font-medium text-gray-300">Name</th>
               <th className="text-left py-3 px-4 font-medium text-gray-300">Product</th>
               <th className="text-left py-3 px-4 font-medium text-gray-300">Price (ETH)</th>
               <th className="text-left py-3 px-4 font-medium text-gray-300">Actions</th>
@@ -226,38 +256,7 @@ export default function OffersList({ contractAddress, refreshTrigger, campaignEn
           </thead>
           <tbody>
             {offers.map((offer, index) => (
-              <tr key={index} className="border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors">
-                <td className="py-4 px-4">
-                  <div className="flex items-center gap-3">
-                    <Wallet className="w-4 h-4 text-gray-400" />
-                    <code className="text-sm bg-gray-700 px-2 py-1 rounded font-mono">
-                      {offer.walletAddress.slice(0, 6)}...{offer.walletAddress.slice(-4)}
-                    </code>
-                  </div>
-                </td>
-                <td className="py-4 px-4">
-                  <div className="font-medium text-white">{offer.productName}</div>
-                </td>
-                <td className="py-4 px-4">
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="w-4 h-4 text-green-400" />
-                    <span className="font-semibold text-green-400">
-                      {ethers.formatEther(offer.price)}
-                    </span>
-                  </div>
-                </td>
-                <td className="py-4 px-4">
-                  <a
-                    href={offer.productLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    View Product
-                  </a>
-                </td>
-              </tr>
+              <OfferRow key={index} offer={offer} index={index} />
             ))}
           </tbody>
         </table>

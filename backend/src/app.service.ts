@@ -151,4 +151,18 @@ export class AppService {
     const { password: _, ...sellerWithoutPassword } = seller;
     return sellerWithoutPassword as Seller;
   }
+
+  async getSellerById(id: number): Promise<Seller | null> {
+    const seller = await this.sellerRepository.findOne({
+      where: { id }
+    });
+
+    if (!seller) {
+      return null;
+    }
+
+    // Return seller without password
+    const { password: _, ...sellerWithoutPassword } = seller;
+    return sellerWithoutPassword as Seller;
+  }
 }

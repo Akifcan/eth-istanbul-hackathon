@@ -77,7 +77,7 @@ export default function OfferForm({ contractAddress, onOfferSuccess }: OfferForm
       const campaignPrice = await contract.price();
       console.log('Campaign Price:', ethers.formatEther(campaignPrice), 'ETH');
       
-      const tx = await contract.submitOffer(priceInWei, productName, productLink, { 
+      const tx = await contract.submitOffer(priceInWei, productName, productLink, `${user?.id}`, { 
         value: campaignPrice 
       });
       
@@ -213,6 +213,7 @@ export default function OfferForm({ contractAddress, onOfferSuccess }: OfferForm
           />
           <p className="text-xs text-gray-500 mt-1">Link to the product you're offering</p>
         </div>
+
 
         <div className="bg-orange-900/20 border border-orange-500/30 rounded-lg p-4">
           <h4 className="font-semibold text-orange-300 mb-2">Important - Payment Required:</h4>

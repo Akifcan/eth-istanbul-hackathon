@@ -86,7 +86,7 @@ export default function CampaignDetail() {
             const contract = new ethers.Contract(campaignId, abi, provider);
 
             const result = await contract.getParticipantInfo();
-            
+
             const info: ContractInfo = {
                 currentParticipants: result[0],
                 maxParticipants: result[1],
@@ -138,7 +138,7 @@ export default function CampaignDetail() {
                     <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
                     <h1 className="text-2xl font-bold mb-2">Campaign Not Found</h1>
                     <p className="text-gray-400 mb-6">{error}</p>
-                    <Link 
+                    <Link
                         href="/"
                         className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition-colors"
                     >
@@ -155,7 +155,7 @@ export default function CampaignDetail() {
     const endDate = new Date(parseInt(contractInfo.contractEndDate) * 1000);
     const isExpired = endDate < new Date();
     const participantProgress = (Number(contractInfo.currentParticipants) / Number(contractInfo.maxParticipants)) * 100;
-    
+
     // Check if user is corporate (has profilePhoto, name, and email)
     const isCorporateUser = user && user.profilePhoto && user.name && user.email;
 
@@ -165,14 +165,14 @@ export default function CampaignDetail() {
                 <div className="max-w-4xl mx-auto">
                     {/* Header */}
                     <div className="mb-8">
-                        <Link 
+                        <Link
                             href="/"
                             className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-6"
                         >
                             <ArrowLeft className="w-4 h-4" />
                             Back to home
                         </Link>
-                        
+
                         <div className="flex items-center gap-4 mb-4">
                             <h1 className="text-4xl font-bold">{contractInfo.contractTitle}</h1>
                             {contractInfo.isFinalized ? (
@@ -189,7 +189,7 @@ export default function CampaignDetail() {
                                 </span>
                             )}
                         </div>
-                        
+
                         <p className="text-gray-400 text-lg">{contractInfo.contractDescription}</p>
                     </div>
 
@@ -222,7 +222,7 @@ export default function CampaignDetail() {
                         </div>
                     </div>
 
-                    <div className="grid lg:grid-cols-3 gap-8">
+                    <div className={`grid  gap-8 ${isCorporateUser ? 'grid-cols-1' : 'lg:grid-cols-3'}`}>
                         {/* Campaign Stats */}
                         <div className="lg:col-span-2">
                             <div className="grid md:grid-cols-2 gap-6 mb-8">
@@ -235,7 +235,7 @@ export default function CampaignDetail() {
                                         {contractInfo.currentParticipants.toString()} / {contractInfo.maxParticipants.toString()}
                                     </p>
                                     <div className="w-full bg-gray-700 rounded-full h-2 mt-3">
-                                        <div 
+                                        <div
                                             className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                                             style={{ width: `${participantProgress}%` }}
                                         ></div>
@@ -281,10 +281,10 @@ export default function CampaignDetail() {
                                     </p>
                                 </div>
 
-                                            {/* Offers List */}
-                    <div className="mb-8" style={{gridColumn: '1/-1'}}>
-                        <OffersList contractAddress={campaignId} campaignEndTime={contractInfo.contractEndDate} refreshTrigger={offersRefreshTrigger} />
-                    </div>
+                                {/* Offers List */}
+                                <div className="mb-8" style={{ gridColumn: '1/-1' }}>
+                                    <OffersList contractAddress={campaignId} campaignEndTime={contractInfo.contractEndDate} refreshTrigger={offersRefreshTrigger} />
+                                </div>
 
                             </div>
 
@@ -296,7 +296,7 @@ export default function CampaignDetail() {
                                         <h3 className="text-xl font-semibold text-green-400">Winner Selected!</h3>
                                     </div>
                                     <p className="text-green-300">
-                                        <strong>Winner Company:</strong> 
+                                        <strong>Winner Company:</strong>
                                         <code className="ml-2 bg-gray-800 px-2 py-1 rounded text-sm">
                                             {contractInfo.senderCompany}
                                         </code>
@@ -307,7 +307,7 @@ export default function CampaignDetail() {
 
                         {/* Join Campaign Sidebar - Only for Regular Users who haven't joined */}
                         {!isCorporateUser && !isParticipant && (
-                            <JoinCampaignSidebar 
+                            <JoinCampaignSidebar
                                 contractAddress={campaignId}
                                 contractInfo={{
                                     priceETH: contractInfo.priceETH,
@@ -322,7 +322,7 @@ export default function CampaignDetail() {
 
                         {/* Withdraw Sidebar - Only for Regular Users who have joined */}
                         {!isCorporateUser && isParticipant && (
-                            <WithdrawSidebar 
+                            <WithdrawSidebar
                                 contractAddress={campaignId}
                                 contractInfo={{
                                     priceETH: contractInfo.priceETH,
@@ -336,13 +336,13 @@ export default function CampaignDetail() {
                             />
                         )}
 
-                        
+
                     </div>
-                             {/* Show OfferForm for Corporate Users, PurchaseForm for Regular Users */}
+                    {/* Show OfferForm for Corporate Users, PurchaseForm for Regular Users */}
                     {!contractInfo.isFinalized && !isExpired && (
                         <div className="mb-8">
                             {isCorporateUser && (
-                                <OfferForm 
+                                <OfferForm
                                     contractAddress={campaignId}
                                     onOfferSuccess={() => {
                                         setSuccessMessage('Offer submitted successfully!');
@@ -357,7 +357,7 @@ export default function CampaignDetail() {
                         </div>
                     )}
 
-                
+
                 </div>
             </div>
         </div>

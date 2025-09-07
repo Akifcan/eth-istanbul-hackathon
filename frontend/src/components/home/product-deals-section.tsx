@@ -38,7 +38,7 @@ export default function ProductDealsSection() {
             
             <div className="hidden md:block">
               <Link 
-                href="/deals"
+                href="/campaigns"
                 className="inline-flex items-center gap-2 text-pink-500 hover:text-pink-400 font-medium transition-colors"
               >
                 Browse all deals
@@ -103,7 +103,7 @@ export default function ProductDealsSection() {
             {/* Mobile CTA */}
             <div className="md:hidden mt-8">
               <Link 
-                href="/deals"
+                href="/campaigns"
                 className="inline-flex items-center gap-2 text-pink-500 hover:text-pink-400 font-medium transition-colors"
               >
                 Browse all deals
