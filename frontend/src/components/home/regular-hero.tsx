@@ -26,8 +26,7 @@ export default function RegularHero() {
             <div className="space-y-8">
               <div className="space-y-6">
                 <h1 className="text-6xl lg:text-8xl font-bold tracking-tight">
-                  <span className="text-white">Ally</span>
-                  <span className="text-pink-500">Buy</span>
+                  <span className="text-pink-500">Sway</span>
                 </h1>
                 <p className="text-xl lg:text-2xl text-gray-400 leading-relaxed max-w-lg">
                   Join the collective. Buy together. Save more with Web3-powered bulk purchasing.

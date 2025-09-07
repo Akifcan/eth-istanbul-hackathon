@@ -121,17 +121,17 @@ export default function JoinCampaignSidebar({
   return (
     <div className="lg:col-span-1">
       {!user && (
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 sticky top-6">
-          <h3 className="text-xl font-semibold mb-4">Join Campaign</h3>
+        <div className="bg-gray-900 rounded-lg p-6 sticky top-6">
+          <h3 className="text-xl font-semibold mb-4 text-white">Join Campaign</h3>
           <div className="text-center">
             <div className="mb-4">
-              <Users className="w-16 h-16 text-blue-400 mx-auto mb-3" />
-              <p className="text-gray-300 mb-2">Connect your wallet to join this bulk buy campaign</p>
-              <p className="text-gray-500 text-sm">Save money by purchasing together with others</p>
+              <Users className="w-16 h-16 text-white mx-auto mb-3" />
+              <p className="text-white mb-2">Connect your wallet to join this bulk buy campaign</p>
+              <p className="text-gray-400 text-sm">Save money by purchasing together with others</p>
             </div>
             <Link 
               href="/login"
-              className="inline-block w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition-colors"
+              className="inline-block w-full py-3 bg-white text-black hover:bg-gray-200 rounded-lg font-semibold transition-colors"
             >
               Connect Wallet
             </Link>
@@ -140,26 +140,26 @@ export default function JoinCampaignSidebar({
       )}
       
       {user && !contractInfo.isFinalized && !isExpired && (
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 sticky top-6">
-          <h3 className="text-xl font-semibold mb-4">Join this Campaign</h3>
+        <div className="bg-gray-900 rounded-lg p-6 sticky top-6">
+          <h3 className="text-xl font-semibold mb-4 text-white">Join this Campaign</h3>
           
           {error && (
-            <div className="mb-4 bg-red-900/20 border border-red-500/30 rounded-lg p-3 flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-              <p className="text-red-300 text-sm">{error}</p>
+            <div className="mb-4 bg-gray-800 rounded-lg p-3 flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+              <p className="text-white text-sm">{error}</p>
             </div>
           )}
 
           {successMessage && (
-            <div className="mb-4 bg-green-900/20 border border-green-500/30 rounded-lg p-3 flex items-start gap-3">
-              <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-              <p className="text-green-300 text-sm">{successMessage}</p>
+            <div className="mb-4 bg-gray-800 rounded-lg p-3 flex items-start gap-3">
+              <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+              <p className="text-white text-sm">{successMessage}</p>
             </div>
           )}
 
           <form onSubmit={(e) => { e.preventDefault(); handlePurchase(); }} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 Full Name *
               </label>
               <input
@@ -167,14 +167,14 @@ export default function JoinCampaignSidebar({
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-white"
                 placeholder="John Doe"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 Address *
               </label>
               <input
@@ -182,14 +182,14 @@ export default function JoinCampaignSidebar({
                 name="userAddress"
                 value={formData.userAddress}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-white"
                 placeholder="123 Main Street"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 Phone Number *
               </label>
               <input
@@ -197,17 +197,17 @@ export default function JoinCampaignSidebar({
                 name="phoneNumber"
                 value={formData.phoneNumber}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-white"
                 placeholder="+1 234 567 8900"
                 required
               />
             </div>
 
-            <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-3 text-sm">
-              <p className="text-blue-200">
-                💰 You'll pay: <strong className="text-blue-300">{contractInfo.priceETH}</strong>
+            <div className="bg-gray-800 rounded-lg p-3 text-sm">
+              <p className="text-white">
+                💰 You'll pay: <strong className="text-white">{contractInfo.priceETH}</strong>
               </p>
-              <p className="text-blue-200 text-xs mt-1">
+              <p className="text-gray-400 text-xs mt-1">
                 Funds are locked until campaign finalization
               </p>
             </div>
@@ -215,7 +215,7 @@ export default function JoinCampaignSidebar({
             <button
               type="submit"
               disabled={purchasing}
-              className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+              className="w-full py-3 bg-white text-black hover:bg-gray-200 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
             >
               {purchasing ? (
                 <>
@@ -232,18 +232,18 @@ export default function JoinCampaignSidebar({
       )}
 
       {(contractInfo.isFinalized || isExpired) && (
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <div className="bg-gray-900 rounded-lg p-6">
           <div className="text-center">
             {contractInfo.isFinalized ? (
               <>
-                <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2 text-green-400">Campaign Completed</h3>
+                <CheckCircle className="w-16 h-16 text-white mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2 text-white">Campaign Completed</h3>
                 <p className="text-gray-400">This bulk buy campaign has been finalized and payments have been processed.</p>
               </>
             ) : (
               <>
-                <Clock className="w-16 h-16 text-red-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2 text-red-400">Campaign Expired</h3>
+                <Clock className="w-16 h-16 text-white mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2 text-white">Campaign Expired</h3>
                 <p className="text-gray-400">This bulk buy campaign period has ended. No new participants can join.</p>
               </>
             )}

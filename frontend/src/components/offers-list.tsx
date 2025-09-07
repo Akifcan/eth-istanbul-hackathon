@@ -115,13 +115,13 @@ export default function OffersList({ contractAddress, refreshTrigger, campaignEn
 
   if (loading) {
     return (
-      <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+      <div className="bg-gray-900 rounded-lg p-6">
         <div className="flex items-center gap-3 mb-4">
-          <Package className="w-6 h-6 text-blue-400" />
-          <h3 className="text-xl font-semibold">Submitted Offers</h3>
+          <Package className="w-6 h-6 text-white" />
+          <h3 className="text-xl font-semibold text-white">Submitted Offers</h3>
         </div>
         <div className="flex items-center justify-center py-8">
-          <Loader className="w-6 h-6 animate-spin text-blue-400" />
+          <Loader className="w-6 h-6 animate-spin text-white" />
           <span className="ml-3 text-gray-400">Loading offers...</span>
         </div>
       </div>
@@ -130,14 +130,14 @@ export default function OffersList({ contractAddress, refreshTrigger, campaignEn
 
   if (error) {
     return (
-      <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+      <div className="bg-gray-900 rounded-lg p-6">
         <div className="flex items-center gap-3 mb-4">
-          <Package className="w-6 h-6 text-blue-400" />
-          <h3 className="text-xl font-semibold">Submitted Offers</h3>
+          <Package className="w-6 h-6 text-white" />
+          <h3 className="text-xl font-semibold text-white">Submitted Offers</h3>
         </div>
         <div className="flex items-center justify-center py-8">
-          <AlertCircle className="w-6 h-6 text-red-400" />
-          <span className="ml-3 text-red-400">{error}</span>
+          <AlertCircle className="w-6 h-6 text-white" />
+          <span className="ml-3 text-white">{error}</span>
         </div>
       </div>
     );
@@ -145,15 +145,15 @@ export default function OffersList({ contractAddress, refreshTrigger, campaignEn
 
   if (offers.length === 0) {
     return (
-      <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+      <div className="bg-gray-900 rounded-lg p-6">
         <div className="flex items-center gap-3 mb-4">
-          <Package className="w-6 h-6 text-blue-400" />
-          <h3 className="text-xl font-semibold">Submitted Offers</h3>
+          <Package className="w-6 h-6 text-white" />
+          <h3 className="text-xl font-semibold text-white">Submitted Offers</h3>
         </div>
         <div className="text-center py-8">
-          <Package className="w-16 h-16 text-gray-500 mx-auto mb-4" />
-          <h4 className="text-lg font-medium text-gray-300 mb-2">No Offers Yet</h4>
-          <p className="text-gray-500">No companies have submitted offers for this campaign yet.</p>
+          <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <h4 className="text-lg font-medium text-white mb-2">No Offers Yet</h4>
+          <p className="text-gray-400">No companies have submitted offers for this campaign yet.</p>
         </div>
       </div>
     );
@@ -163,29 +163,29 @@ export default function OffersList({ contractAddress, refreshTrigger, campaignEn
     <div className="space-y-6">
       {/* Best Offer Card */}
       {offers.length > 0 && (
-        <div className="bg-gradient-to-r from-green-900/20 to-blue-900/20 rounded-lg p-6 border border-green-500/30">
+        <div className="bg-gray-900 rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <Trophy className="w-6 h-6 text-yellow-400" />
+              <Trophy className="w-6 h-6 text-white" />
               <h3 className="text-xl font-semibold text-white">Best Offer</h3>
             </div>
             {!isFinalized && (
-              <div className={`flex items-center gap-3 px-4 py-3 rounded-lg border transition-all duration-300 ${
+              <div className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${
                 isUrgent 
-                  ? 'bg-red-900/30 border-red-500/30' 
-                  : 'bg-orange-900/30 border-orange-500/30'
+                  ? 'bg-gray-800' 
+                  : 'bg-gray-800'
               }`}>
                 <Clock className={`w-6 h-6 animate-pulse ${
-                  isUrgent ? 'text-red-400' : 'text-orange-400'
+                  isUrgent ? 'text-white' : 'text-white'
                 }`} />
                 <div className="text-center">
                   <div className={`text-sm font-medium ${
-                    isUrgent ? 'text-red-300' : 'text-orange-300'
+                    isUrgent ? 'text-white' : 'text-white'
                   }`}>
                     {timeLeft === '00d 00h 00m 00s' ? 'Campaign Ended' : 'Time Remaining'}
                   </div>
                   <div className={`text-2xl font-bold font-mono tracking-wider ${
-                    isUrgent ? 'text-red-400' : 'text-orange-400'
+                    isUrgent ? 'text-white' : 'text-white'
                   }`}>
                     {timeLeft || '00d 00h 00m 00s'}
                   </div>
@@ -222,16 +222,16 @@ export default function OffersList({ contractAddress, refreshTrigger, campaignEn
             <div>
               <p className="text-sm text-gray-400 mb-1">Price</p>
               <div className="flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-green-400" />
-                <span className="text-2xl font-bold text-green-400">
+                <DollarSign className="w-4 h-4 text-white" />
+                <span className="text-2xl font-bold text-white">
                   {ethers.formatEther(offers[0].price)} ETH
                 </span>
               </div>
             </div>
           </div>
           
-          <div className="mt-4 p-3 bg-blue-900/20 rounded-lg border border-blue-500/30">
-            <p className="text-sm text-blue-300">
+          <div className="mt-4 p-3 bg-gray-800 rounded-lg">
+            <p className="text-sm text-white">
               <strong>Note:</strong> If no lower offer is received within the remaining time, 
               you will purchase at this price. This is the best deal currently available!
             </p>
@@ -242,21 +242,21 @@ export default function OffersList({ contractAddress, refreshTrigger, campaignEn
       {!isFinalized && (
           <>
                {/* Offers List */}
-      <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+      <div className="bg-gray-900 rounded-lg p-6">
         <div className="flex items-center gap-3 mb-6">
-          <Package className="w-6 h-6 text-blue-400" />
-          <h3 className="text-xl font-semibold">Submitted Offers ({offers.length})</h3>
+          <Package className="w-6 h-6 text-white" />
+          <h3 className="text-xl font-semibold text-white">Submitted Offers ({offers.length})</h3>
         </div>
       
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-700">
-              <th className="text-left py-3 px-4 font-medium text-gray-300">Company</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-300">Name</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-300">Product</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-300">Price (ETH)</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-300">Actions</th>
+              <th className="text-left py-3 px-4 font-medium text-white">Company</th>
+              <th className="text-left py-3 px-4 font-medium text-white">Name</th>
+              <th className="text-left py-3 px-4 font-medium text-white">Product</th>
+              <th className="text-left py-3 px-4 font-medium text-white">Price (ETH)</th>
+              <th className="text-left py-3 px-4 font-medium text-white">Actions</th>
             </tr>
           </thead>
           <tbody>
