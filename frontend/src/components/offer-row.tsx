@@ -61,7 +61,7 @@ export default function OfferRow({ offer, index }: OfferRowProps) {
             />
           )}
           <div>
-            <div className="font-medium text-white">{seller?.name || 'Loading...'}</div>
+            <div className="font-medium text-white" style={{whiteSpace: 'nowrap'}}>{seller?.name || 'Loading...'}</div>
           </div>
         </div>
       </td>
@@ -70,9 +70,11 @@ export default function OfferRow({ offer, index }: OfferRowProps) {
       </td>
       <td className="py-4 px-4">
         <div className="flex items-center gap-2">
-          <DollarSign className="w-4 h-4 text-green-400" />
-          <span className="font-semibold text-green-400">
-            {ethers.formatEther(offer.price)}
+          <DollarSign className="w-4 h-4" />
+          <span className="font-semibold">
+
+            {(parseFloat(ethers.formatEther(offer.price)) * 4500 * 200).toFixed(2)} USDT
+
           </span>
         </div>
       </td>
@@ -81,7 +83,7 @@ export default function OfferRow({ offer, index }: OfferRowProps) {
           href={offer.productLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors"
+          className="inline-flex items-center gap-2 text-pink-500 hover:text-pink-600 transition-colors"
         >
           <ExternalLink className="w-4 h-4" />
           View Product

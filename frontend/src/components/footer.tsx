@@ -11,7 +11,7 @@ export default function Footer() {
           <div className="space-y-4">
             <Link href="/" className="flex items-center">
               <span className="text-2xl font-bold text-white">
-                AllyBuy
+                Sway
               </span>
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed">
@@ -41,7 +41,7 @@ export default function Footer() {
         <div className="border-t border-gray-800 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-gray-400 text-sm">
-              © 2024 AllyBuy. All rights reserved.
+              © 2024 Sway. All rights reserved.
             </div>
             <div className="flex items-center space-x-6">
               <span className="text-gray-400 text-sm">Powered by Web3</span>

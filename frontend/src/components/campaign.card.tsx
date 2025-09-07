@@ -158,10 +158,11 @@ export default function CampaignCard({ campaign, hideBadge = false }: {campaign:
                     {/* Price Section */}
                     <div className="mb-6">
                         <div className="flex items-baseline gap-2">
-                            <span className="text-2xl font-bold text-white">{contractInfo.priceETH}</span>
-                            <span className="text-sm text-blue-400 font-medium">ETH</span>
-                            <span className="text-xs text-gray-500">per item</span>
+                            <span className="text-2xl font-bold text-white">1000</span>
+                            <span className="text-sm font-medium">USDT</span>
+                            <span className="text-xs">per item</span>
                         </div>
+                     
                     </div>
 
                     {/* Progress Section */}
@@ -175,16 +176,16 @@ export default function CampaignCard({ campaign, hideBadge = false }: {campaign:
                         
                         {/* Progress Bar */}
                         <div className="relative">
-                            <div className="w-full bg-gray-800 rounded-full h-3 shadow-inner">
+                            <div className="w-full bg-gray-800 rounded-full h-3">
                                 <div 
-                                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-700 ease-out relative overflow-hidden"
+                                    className="bg-pink h-3 rounded-full transition-all duration-700 ease-out relative overflow-hidden"
                                     style={{ width: `${Math.min(progressPercentage, 100)}%` }}
                                 >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
+                                    <div className="absolute inset-0 bg-pink-500"></div>
                                 </div>
                             </div>
                             <div className="mt-2 text-xs text-center">
-                                <span className="text-blue-400 font-medium">{progressPercentage.toFixed(0)}% Complete</span>
+                                <span className="font-medium">{progressPercentage.toFixed(0)}% Complete</span>
                             </div>
                         </div>
                     </div>
@@ -216,7 +217,7 @@ export default function CampaignCard({ campaign, hideBadge = false }: {campaign:
                         <div className="text-xs text-gray-500">
                             By: {campaign.createdWallet.slice(0, 6)}...{campaign.createdWallet.slice(-4)}
                         </div>
-                        <div className="flex items-center gap-1 text-xs text-blue-400 font-medium group-hover:text-blue-300 transition-colors">
+                        <div className="flex items-center gap-1 text-xs  font-medium group-hover:text-blue-300 transition-colors">
                             <span>View Details</span>
                             <svg className="w-3 h-3 transition-transform group-hover:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />

@@ -27,7 +27,7 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <span className="text-2xl font-bold text-white">
-              AllyBuy
+              Sway
             </span>
           </Link>
 
@@ -48,9 +48,9 @@ export default function Header() {
               <>
                 {/* Create Contract Button - Only for non-corporate users */}
                 {!isCorporateUser && (
-                  <Link href="/create" className="hidden md:flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-300">
+                  <Link href="/create" className="hidden md:flex items-center gap-2 bg-pink-600 hover:bg-pink-700 px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-300">
                     <Plus className="w-4 h-4" />
-                    Create Contract
+                    Create
                   </Link>
                 )}
 

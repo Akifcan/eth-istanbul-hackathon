@@ -102,9 +102,9 @@ export default function FeaturesSection() {
                   {/* Middle Card - Price */}
                   <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 mr-12">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-white mb-1">₺899</div>
-                      <div className="text-gray-400 line-through text-sm">₺1,299</div>
-                      <div className="text-green-400 text-sm font-medium">31% saved</div>
+                      <div className="text-2xl font-bold text-white mb-1">$900</div>
+                      <div className="text-gray-400 line-through text-sm">$1000</div>
+                      <div className="text-green-400 text-sm font-medium">10% saved</div>
                     </div>
                   </div>
 

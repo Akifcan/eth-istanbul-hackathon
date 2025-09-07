@@ -191,7 +191,7 @@ export default function CorporateLogin() {
                 {/* Header */}
                 <div className="text-center">
                     <Link href="/" className="text-3xl font-bold text-blue-500 mb-8 inline-block">
-                        AllyBuy
+                        Sway
                     </Link>
                     <h2 className="text-3xl font-bold text-white mb-2">
                         {isLogin ? 'Account Login' : 'Create Account'}

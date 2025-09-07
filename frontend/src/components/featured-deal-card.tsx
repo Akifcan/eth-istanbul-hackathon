@@ -137,14 +137,14 @@ export default function FeaturedDealCard({ campaign }: FeaturedDealCardProps) {
                 <DollarSign className="w-4 h-4 text-green-400" />
                 <span className="text-xs text-gray-400">Price</span>
               </div>
-              <div className="text-sm font-bold text-green-400">
-                {contractInfo.priceETH}
+              <div className="text-sm font-bold ">
+                1000 USDT
               </div>
             </div>
           </div>
 
           {/* Status Info */}
-          <div className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/20 rounded-2xl p-4">
+          <div className=" border border-pink-500/20 rounded-2xl p-4">
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs text-gray-400 mb-1">Status</div>
@@ -169,7 +169,7 @@ export default function FeaturedDealCard({ campaign }: FeaturedDealCardProps) {
             </div>
             <div className="w-full bg-gray-700 rounded-full h-2">
               <div 
-                className="bg-gradient-to-r from-pink-500 to-purple-500 h-2 rounded-full transition-all duration-300" 
+                className="bg-pink-600 h-2 rounded-full transition-all duration-300" 
                 style={{ width: `${participantProgress}%` }}
               ></div>
             </div>
@@ -178,7 +178,7 @@ export default function FeaturedDealCard({ campaign }: FeaturedDealCardProps) {
           {/* Action Button */}
           <Link 
             href={`/campaign/${campaign.transaction}`}
-            className="group w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white py-3 px-4 rounded-2xl font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2"
+            className="group w-full bg-pink-500 hover:bg-pink-600 text-white py-3 px-4 rounded-2xl font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2"
           >
             {contractInfo.isFinalized ? 'View Details' : 'Join This Deal'}
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

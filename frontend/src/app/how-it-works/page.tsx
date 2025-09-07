@@ -58,7 +58,7 @@ export default function HowItWorks() {
             <div className="relative pt-20 pb-16">
                 <div className="container mx-auto px-4 text-center">
                     <h1 className={`text-6xl font-bold mb-6 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                        How <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">AllyBuy</span> Works
+                        How <span className="text-pink-500 bg-clip-text">Sway</span> Works
                     </h1>
                     <p className={`text-xl text-gray-400 max-w-3xl mx-auto transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                         Experience the power of collective buying through blockchain technology. 
@@ -154,7 +154,7 @@ export default function HowItWorks() {
             <div className="bg-gray-800/30 py-20">
                 <div className="container mx-auto px-4">
                     <h2 className="text-4xl font-bold text-center mb-16">
-                        Why Choose <span className="text-blue-400">AllyBuy</span>?
+                        Why Choose <span className="text-pink-500">Sway</span>?
                     </h2>
                     <div className="grid md:grid-cols-3 gap-8">
                         {[
@@ -196,7 +196,7 @@ export default function HowItWorks() {
                     <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
                         Join thousands of smart shoppers who are already saving money through collective buying power.
                     </p>
-                    <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-12 rounded-full text-lg transition-all duration-300 hover:scale-105 shadow-lg shadow-blue-600/30">
+                    <button className="text-pink-500 font-bold py-4 px-12 rounded-full text-lg transition-all duration-300 hover:scale-105 shadow-lg shadow-pink-600">
                         Get Started Now
                     </button>
                 </div>
