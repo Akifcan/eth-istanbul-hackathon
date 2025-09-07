@@ -56,7 +56,7 @@ export default function RegularHero() {
                   <div className="text-sm text-gray-400">Active Buyers</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-white">₺2.5M</div>
+                  <div className="text-2xl font-bold text-white">$2.5M</div>
                   <div className="text-sm text-gray-400">Total Saved</div>
                 </div>
                 <div className="text-center">
