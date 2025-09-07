@@ -89,7 +89,7 @@ contract BuyItem {
     }
 
     function finalize() external {
-        require(msg.sender == owner, "Only owner can finalize");
+        // require(msg.sender == owner, "Only owner can finalize");
         require(!isFinalized, "Already finalized");
         require(offers.length > 0, "No offers available");
         require(participants.length > 0, "No participants");
