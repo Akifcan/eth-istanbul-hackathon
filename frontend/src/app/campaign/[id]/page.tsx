@@ -362,7 +362,7 @@ export default function CampaignDetail() {
 
                                 {/* Offers List */}
                                 <div className="mb-8" style={{ gridColumn: '1/-1' }}>
-                                    <OffersList contractAddress={campaignId} campaignEndTime={contractInfo.contractEndDate} refreshTrigger={offersRefreshTrigger} />
+                                        <OffersList contractAddress={campaignId} campaignEndTime={contractInfo.contractEndDate} refreshTrigger={offersRefreshTrigger} isFinalized={contractInfo.isFinalized} />
                                 </div>
 
                             </div>

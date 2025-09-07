@@ -27,9 +27,10 @@ interface OffersListProps {
   contractAddress: string;
   refreshTrigger?: number;
   campaignEndTime?: string; // Campaign end time for timer
+  isFinalized?: boolean; // Whether the campaign is finalized
 }
 
-export default function OffersList({ contractAddress, refreshTrigger, campaignEndTime }: OffersListProps) {
+export default function OffersList({ contractAddress, refreshTrigger, campaignEndTime, isFinalized = false }: OffersListProps) {
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -168,27 +169,29 @@ export default function OffersList({ contractAddress, refreshTrigger, campaignEn
               <Trophy className="w-6 h-6 text-yellow-400" />
               <h3 className="text-xl font-semibold text-white">Best Offer</h3>
             </div>
-            <div className={`flex items-center gap-3 px-4 py-3 rounded-lg border transition-all duration-300 ${
-              isUrgent 
-                ? 'bg-red-900/30 border-red-500/30' 
-                : 'bg-orange-900/30 border-orange-500/30'
-            }`}>
-              <Clock className={`w-6 h-6 animate-pulse ${
-                isUrgent ? 'text-red-400' : 'text-orange-400'
-              }`} />
-              <div className="text-center">
-                <div className={`text-sm font-medium ${
-                  isUrgent ? 'text-red-300' : 'text-orange-300'
-                }`}>
-                  {timeLeft === '00d 00h 00m 00s' ? 'Campaign Ended' : 'Time Remaining'}
-                </div>
-                <div className={`text-2xl font-bold font-mono tracking-wider ${
+            {!isFinalized && (
+              <div className={`flex items-center gap-3 px-4 py-3 rounded-lg border transition-all duration-300 ${
+                isUrgent 
+                  ? 'bg-red-900/30 border-red-500/30' 
+                  : 'bg-orange-900/30 border-orange-500/30'
+              }`}>
+                <Clock className={`w-6 h-6 animate-pulse ${
                   isUrgent ? 'text-red-400' : 'text-orange-400'
-                }`}>
-                  {timeLeft || '00d 00h 00m 00s'}
+                }`} />
+                <div className="text-center">
+                  <div className={`text-sm font-medium ${
+                    isUrgent ? 'text-red-300' : 'text-orange-300'
+                  }`}>
+                    {timeLeft === '00d 00h 00m 00s' ? 'Campaign Ended' : 'Time Remaining'}
+                  </div>
+                  <div className={`text-2xl font-bold font-mono tracking-wider ${
+                    isUrgent ? 'text-red-400' : 'text-orange-400'
+                  }`}>
+                    {timeLeft || '00d 00h 00m 00s'}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -236,7 +239,9 @@ export default function OffersList({ contractAddress, refreshTrigger, campaignEn
         </div>
       )}
 
-      {/* Offers List */}
+      {!isFinalized && (
+          <>
+               {/* Offers List */}
       <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
         <div className="flex items-center gap-3 mb-6">
           <Package className="w-6 h-6 text-blue-400" />
@@ -266,6 +271,10 @@ export default function OffersList({ contractAddress, refreshTrigger, campaignEn
           * Offers are sorted by price (lowest first). Campaign creator will select the best offer.
         </div>
       </div>
+          </>
+      )}
+
+   
     </div>
   );
 }
